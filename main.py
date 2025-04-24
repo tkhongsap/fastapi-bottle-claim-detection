@@ -29,7 +29,6 @@ from utils.story_generation import (
     generate_story_from_video,
     parse_openai_response
 )
-from utils.prompts import STORY_GENERATION_PROMPT
 
 # --- Configuration & Setup --- 
 

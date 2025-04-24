@@ -17,7 +17,6 @@ from openai import OpenAIError
 
 # Import from our utilities
 from utils import openai_client
-from utils.prompts import STORY_GENERATION_PROMPT
 from utils.story_generation import (
     generate_story_from_image,
     generate_story_from_multiple_images,

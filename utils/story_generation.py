@@ -12,7 +12,7 @@ from typing import List, Dict, Optional, Any
 
 # Import from our utilities
 from utils import openai_client
-from utils.prompts import STORY_GENERATION_PROMPT
+from utils.prompts import NEW_PROMPT
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ def generate_story_from_image(base64_image: str, user_prompt: str) -> Dict[str, 
         {
             "role": "user",
             "content": [
-                {"type": "input_text", "text": user_prompt or "Create an engaging caption for this image that captures its essence and tells its story."},
+                {"type": "input_text", "text": user_prompt},
                 {"type": "input_image", "image_url": f"data:image/jpeg;base64,{base64_image}"}
             ]
         }
@@ -109,8 +109,10 @@ def generate_story_from_image(base64_image: str, user_prompt: str) -> Dict[str, 
         response = openai_client.get_client().responses.create(
             model=openai_client.get_active_model(),
             input=input_data,
-            instructions=STORY_GENERATION_PROMPT
+            instructions=NEW_PROMPT,
             # max_tokens is not supported in Responses API; control output length via prompt/instructions
+            temperature=0,
+            top_p=1,
         )
         
         # Extract token usage information
@@ -196,7 +198,7 @@ def generate_story_from_multiple_images(base64_images: List[str], user_prompt: s
     USD_TO_THB_RATE = 35.0
 
     user_content: List[Dict[str, Any]] = [
-        {"type": "input_text", "text": user_prompt or "Create an engaging caption that connects these images and tells their collective story."}
+        {"type": "input_text", "text": user_prompt}
     ]
     for img_b64 in base64_images:
         user_content.append({"type": "input_image", "image_url": f"data:image/jpeg;base64,{img_b64}"})
@@ -209,8 +211,10 @@ def generate_story_from_multiple_images(base64_images: List[str], user_prompt: s
         response = openai_client.get_client().responses.create(
             model=openai_client.get_active_model(),
             input=input_data,
-            instructions=STORY_GENERATION_PROMPT
+            instructions=NEW_PROMPT,
             # max_tokens is not supported in Responses API; control output length via prompt/instructions
+            temperature=0,
+            top_p=1,
         )
         
         # Extract token usage information
@@ -327,7 +331,7 @@ def generate_story_from_video(video_details: Dict[str, Any], user_prompt: str) -
         response = openai_client.get_client().responses.create(
             model=openai_client.get_active_model(),
             input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
-            instructions=STORY_GENERATION_PROMPT
+            instructions=NEW_PROMPT
         )
         
         # Extract token usage information
