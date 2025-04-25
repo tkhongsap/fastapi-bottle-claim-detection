@@ -14,6 +14,7 @@ import logging
 from typing import List, Dict, Optional, Any
 from fastapi import HTTPException, UploadFile
 from openai import OpenAIError
+from utils.prompts import NEW_PROMPT
 
 # Import from our utilities
 from utils import openai_client
@@ -384,7 +385,7 @@ def analyze_frames(frame_images: List[str], video_details: Dict[str, Any], user_
         # Reuse the multiple images story generation function as it already handles
         # multiple base64-encoded images, which is what our frames are
         story_result = generate_story_from_multiple_images(frame_images, 
-            user_prompt or "Create an engaging caption that captures what's happening in this video")
+            NEW_PROMPT)
         
         # Log the token usage for debugging
         logger.info(f"Token usage for frame analysis - Input: {story_result.get('input_tokens', 0)}, "
