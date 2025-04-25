@@ -34,11 +34,11 @@ def parse_openai_response(content: Optional[str]) -> Dict[str, str]:
     """
     if not content:
         raise ValueError("No content received from OpenAI")
-
+    
     try:
         # Attempt to extract JSON from markdown code blocks first
         # More robust regex to handle optional language specifier and whitespace
-        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
+        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*", content, re.DOTALL)
         if match:
             json_content = match.group(1)
             logger.info("Extracted JSON content from markdown code block.")
@@ -48,7 +48,7 @@ def parse_openai_response(content: Optional[str]) -> Dict[str, str]:
             json_content = content.strip().strip("`")
             if json_content.lower().startswith('json'):
                 json_content = json_content[4:].lstrip()
-
+        
         # Parse the JSON
         parsed_data = json.loads(json_content)
         
@@ -322,7 +322,7 @@ def generate_story_from_video(video_details: Dict[str, Any], user_prompt: str) -
     
     # Create a prompt with the metadata description
     prompt = (
-        f"User prompt: {NEW_PROMPT}"
+        f"User prompt: {user_prompt}"
     )
     
     try:

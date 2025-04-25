@@ -153,50 +153,49 @@ UNCLAIM_CRITERIAS = """
 
 NEW_PROMPT = f"""
 You will receive an image or multiple images of one bottle or a video of a broken bottle.
-Your task is to classify claim or unclaim based on the provided images or video and give reasons following to criterias.
-The answer have to specify that the bottle can claim or unclaim
-and evaluate condition of completeness of the bottle as percentage if it below 80% it unclaim otherwise it can claim
-
-You will receive the image and examine to provide an accurate following to these criterias.
+Your task is to classify claim or unclaim based on the provided images or video and give reasons following specific criteria.
+The answer must clearly specify whether the bottle can claim or unclaim,
+and evaluate the condition of completeness of the bottle as a percentage (if below 80% it's unclaim, otherwise it can claim).
 
 # Steps
 1. **Detect brand of bottle:**
    - Check whether what brand is this bottle
    - if it's "Chang" or "ช้าง" need to be considered in the next step
-   - if it is not "Chang" or "ช้าง" response as unclaim without consider next step and give a reason "This bottle is not brand Chang cannot claim".
+   - if it is not "Chang" or "ช้าง" response as unclaim without considering next steps and give a reason "This bottle is not brand Chang cannot claim".
+
 2. **Keys characteristics of claimable bottle**
    {CLAIM_CRITERIAS}
+
 3. **Keys characteristics of unclaimable bottle**
    {UNCLAIM_CRITERIAS}
-4. **Detect, examine and assess score each part of the bottle:**
-   - **There are 4 main parts of a bottle** 1.cap 2.neck 3.body 4.bottom
-   - **Check the cap** Is there the cap? Is it thighly close? calculate score as percentage of this part
-   - **Check the neck** Is there still the neck? Is it break or damage? calculate score as percentage of this part
-   - **Check the body** Is there still the body? Is it break or damage? calculate score as percentage of this part
-   - **Check the bottom** Is there still the bottom? Is it break or damage? calculate score as percentage of this part
-5. **Decide calim or unclaim:**
-   - From the evaluated score decide whether it can claim if the score higher than 80% otherwise it unclaim.
+
+4. **Detect, examine and assess score for each part of the bottle:**
+   - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
+   - **Check the cap:** Is there the cap? Is it tightly closed? Calculate score as percentage of this part
+   - **Check the neck:** Is there still the neck? Is it broken or damaged? Calculate score as percentage of this part
+   - **Check the body:** Is there still the body? Is it broken or damaged? Calculate score as percentage of this part
+   - **Check the bottom:** Is there still the bottom? Is it broken or damaged? Calculate score as percentage of this part
+
+5. **Decide claim or unclaim:**
+   - From the evaluated scores, decide whether it can claim if the overall score is higher than 80%, otherwise it's unclaim.
  
 # Notes
 - Always prioritize accuracy and clarity in your responses.
-- Always answer claim or unclaim and reasons
+- Always answer claim or unclaim with clear reasons.
+- Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
  
-# Example
-- Can claim condition(%)
-   1.The cap describe the condition, calculate score as percentage of this part
-   2.The neck describe the condition, calculate score as percentage of this part
-   3.The body describe the condition, calculate score as percentage of this part
-   4.The bottom describe the condition, calculate score as percentage of this part
-- Unclaim condition(%)
-   1.The cap describe the condition, calculate score as percentage of this part
-   2.The neck describe the condition, calculate score as percentage of this part
-   3.The body describe the condition, calculate score as percentage of this part
-   4.The bottom describe the condition, calculate score as percentage of this part
+# Output Format
+For each assessment, use the following format:
 
- 
-# Output format
-Return ONLY a JSON object with these fields:
-- english: Answer claim or unclaim with reasons
+**Bottle Assessment:**
+✅/❌ [Cap condition]
+✅/❌ [Neck condition]
+✅/❌ [Body condition]
+✅/❌ [Bottom condition]
+✅/❌ **CLAIM/UNCLAIM** [Overall percentage and final decision]
+
+Then provide a JSON object with:
+- english: Use output format to answer
 - thai: The description translated to Thai
 """

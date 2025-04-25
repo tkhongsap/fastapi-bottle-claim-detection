@@ -385,7 +385,7 @@ def analyze_frames(frame_images: List[str], video_details: Dict[str, Any], user_
         # Reuse the multiple images story generation function as it already handles
         # multiple base64-encoded images, which is what our frames are
         story_result = generate_story_from_multiple_images(frame_images, 
-            NEW_PROMPT)
+        NEW_PROMPT)
         
         # Log the token usage for debugging
         logger.info(f"Token usage for frame analysis - Input: {story_result.get('input_tokens', 0)}, "

@@ -15,8 +15,8 @@ from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, Auth
 logger = logging.getLogger(__name__)
 
 # Model selection
-VISION_MODEL = "gpt-4.1-mini"
-FALLBACK_VISION_MODEL = "gpt-4.1-mini"  # Fallback if preferred is unavailable
+VISION_MODEL = "gpt-4.1"
+FALLBACK_VISION_MODEL = "gpt-4.1"  # Fallback if preferred is unavailable
 
 # Global client variable and state tracking
 client: Optional[OpenAI] = None

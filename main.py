@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, AuthenticationError
 
 # Import OpenAI client utilities
+from utils.prompts import NEW_PROMPT
 from utils import openai_client
 from utils.media_analysis import analyze_media, extract_frames_and_analyze_video, analyze_frames
 from utils.story_generation import (
@@ -141,7 +142,7 @@ async def analyze_media_endpoint(
     """
     try:
         # Pass empty string if prompt is None
-        result = await analyze_media(files=files, prompt=prompt or "") 
+        result = await analyze_media(files=files, prompt=NEW_PROMPT) 
         return JSONResponse(content=result)
     except HTTPException as e:
         # Re-raise known HTTP exceptions from analyze_media
