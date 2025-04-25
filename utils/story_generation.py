@@ -322,8 +322,7 @@ def generate_story_from_video(video_details: Dict[str, Any], user_prompt: str) -
     
     # Create a prompt with the metadata description
     prompt = (
-        f"Create an engaging caption for a video with these details:\n{metadata_description}\n"
-        f"User prompt: {user_prompt}" if user_prompt else metadata_description
+        f"User prompt: {NEW_PROMPT}"
     )
     
     try:
