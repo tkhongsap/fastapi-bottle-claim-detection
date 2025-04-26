@@ -1,18 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgStory - Media Analysis Story Generator</title>
+    <title>ClaimBottle AI - Instant AI verdict on every bottle claim</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- i18next libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/i18next@21.6.10/i18next.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.2/i18nextHttpBackend.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-browser-languagedetector@6.1.3/i18nextBrowserLanguageDetector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
+    <style>
+        .help-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .help-link:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
     <header class="hero">
+        <nav class="nav-menu">
+            <a href="/" class="nav-menu-item active">
+                <i class="fas fa-home"></i> <span data-i18n="nav_home">หน้าหลัก</span>
+            </a>
+            <a href="/manual" class="nav-menu-item">
+                <i class="fas fa-book"></i> <span data-i18n="nav_manual">คู่มือการใช้งาน</span>
+            </a>
+            <div class="language-dropdown">
+                <a href="#" class="nav-menu-item">
+                    <i class="fas fa-globe"></i> <span data-i18n="language">ภาษา</span>
+                </a>
+                <div class="language-dropdown-content">
+                    <a href="#" class="lang-option" data-lang="th">ไทย</a>
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                </div>
+            </div>
+        </nav>
         <div class="hero-content">
-            <h1>ImgStory</h1>
-            <p class="subtitle">AI-powered caption generator for your photos and videos</p>
+            <h1 data-i18n="app_name">ClaimBottle AI</h1>
+            <p class="subtitle" data-i18n="tagline">ตัดสินผลการเคลมขวดด้วย AI ทันที</p>
         </div>
     </header>
 
@@ -20,8 +64,8 @@
         <section id="upload-section" class="container">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-cloud-upload-alt"></i> Upload Media</h2>
-                    <p>Upload images (JPG, PNG) or video (MP4) to generate compelling captions</p>
+                    <h2><i class="fas fa-cloud-upload-alt"></i> <span data-i18n="upload_media">อัปโหลดสื่อ</span></h2>
+                    <p data-i18n="upload_hint">อัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4) ของขวดเพื่อประเมินสิทธิ์การเคลม</p>
                 </div>
                 <div class="card-body">
                     <form id="upload-form">
@@ -29,37 +73,37 @@
                             <label for="media-files" class="file-input-label">
                                 <div class="file-input-placeholder">
                                     <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Drag & drop files here</p>
-                                    <span>Choose Files</span>
+                                    <p data-i18n="drag_drop">ลากและวางไฟล์ที่นี่</p>
+                                    <span data-i18n="choose_files">เลือกไฟล์</span>
                                 </div>
                                 <div id="preview-content" class="preview-content"></div>
                             </label>
                             <input type="file" id="media-files" name="files" accept="image/jpeg, image/png, video/mp4" multiple>
-                            <p class="file-note"><i class="fas fa-info-circle"></i> Select multiple images or one video</p>
-                            <p class="file-limits"><i class="fas fa-exclamation-circle"></i> Max 10MB per image, 50MB for video</p>
+                            <p class="file-note"><i class="fas fa-info-circle"></i> <span data-i18n="file_note">เลือกรูปหลายรูปหรือวิดีโอหนึ่งไฟล์ของขวด</span></p>
+                            <p class="file-limits"><i class="fas fa-exclamation-circle"></i> <span data-i18n="file_limits">รูปภาพสูงสุด 10 MB, วิดีโอสูงสุด 50 MB</span></p>
                         </div>
                         <div id="preview-container" class="preview-container">
-                            <h3><i class="fas fa-eye"></i> Media Preview</h3>
+                            <h3><i class="fas fa-eye"></i> <span data-i18n="media_preview">ตัวอย่างสื่อ</span></h3>
                             <div></div>
                         </div>
-                        <button type="submit" class="submit-button"><i class="fas fa-magic"></i> Generate Captions</button>
+                        <button type="submit" class="submit-button"><i class="fas fa-magnifying-glass-chart"></i> <span data-i18n="submit_btn">ประเมินความเสียหายของขวด</span></button>
                     </form>
                 </div>
             </div>
 
             <div id="loading" class="card">
                 <div class="spinner"></div>
-                <p>Analyzing your media...</p>
+                <p data-i18n="loading">กำลังวิเคราะห์สภาพขวด...</p>
             </div>
 
             <div id="results" class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-comment-dots"></i> Generated Captions</h2>
+                    <h2><i class="fas fa-clipboard-check"></i> <span data-i18n="results_title">ผลการประเมิน</span></h2>
                 </div>
                 <div class="card-body">
                     <div class="caption-container">
                         <div id="english-caption" class="caption-box">
-                            <h3><i class="fas fa-language"></i> English</h3>
+                            <h3><i class="fas fa-language"></i> <span data-i18n="english">ภาษาอังกฤษ</span></h3>
                             <div class="caption-content">
                                 <p>...</p>
                                 <button class="copy-btn" data-target="english-caption"><i class="fas fa-copy"></i></button>
@@ -67,7 +111,7 @@
                         </div>
                         
                         <div id="thai-caption" class="caption-box">
-                            <h3><i class="fas fa-globe-asia"></i> Thai</h3>
+                            <h3><i class="fas fa-globe-asia"></i> <span data-i18n="thai">ภาษาไทย</span></h3>
                             <div class="caption-content">
                                 <p>...</p>
                                 <button class="copy-btn" data-target="thai-caption"><i class="fas fa-copy"></i></button>
@@ -76,18 +120,18 @@
                     </div>
                     
                     <div id="token-usage" class="token-usage">
-                        <h3><i class="fas fa-chart-pie"></i> AI Usage Statistics</h3>
+                        <h3><i class="fas fa-chart-pie"></i> <span data-i18n="usage_stats">สถิติการใช้ AI</span></h3>
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <span class="stat-label">Input Tokens</span>
+                                <span class="stat-label" data-i18n="input_tokens">โทเค็นขาเข้า</span>
                                 <span id="input-tokens" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">Output Tokens</span>
+                                <span class="stat-label" data-i18n="output_tokens">โทเค็นขาออก</span>
                                 <span id="output-tokens" class="stat-value">0</span>
                             </div>
                             <div class="stat-item cost-container">
-                                <span class="stat-label">Total Cost</span>
+                                <span class="stat-label" data-i18n="total_cost">ค่าใช้จ่ายรวม</span>
                                 <div class="cost-values">
                                     <span id="cost-usd" class="stat-value">$0.00</span>
                                     <span class="cost-separator">/</span>
@@ -101,9 +145,9 @@
 
             <div id="error-message" class="card error-card">
                 <i class="fas fa-exclamation-circle"></i>
-                <p>An error occurred.</p>
+                <p data-i18n="error_occurred">เกิดข้อผิดพลาด</p>
                 <button id="retry-button" class="retry-button">
-                    <i class="fas fa-redo"></i> Try Again
+                    <i class="fas fa-redo"></i> <span data-i18n="retry">ลองอีกครั้ง</span>
                 </button>
             </div>
         </section>
@@ -111,9 +155,57 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 ImgStory | Media Analysis Story Generator</p>
+            <p data-i18n="copyright">© 2025 BottleCheck | เครื่องมือประเมินการเคลมความเสียหายขวด</p>
         </div>
     </footer>
+
+    <!-- Added i18n initialization script -->
+    <script>
+        // Initialize i18next
+        i18next
+            .use(i18nextHttpBackend)
+            .use(i18nextBrowserLanguageDetector)
+            .init({
+                fallbackLng: 'th',
+                debug: true,
+                backend: {
+                    loadPath: '/static/locales/{{lng}}.json'
+                }
+            }).then(function(t) {
+                jqueryI18next.init(i18next, $, { useOptionsAttr: true });
+                $('body').localize(); // Apply translations to the entire page
+                
+                // Set default language to Thai
+                i18next.changeLanguage('th');
+                
+                // Set active language class
+                updateLanguageUI('th');
+            });
+
+        // Language switcher buttons
+        $(document).on('click', '.lang-option', function(e) {
+            e.preventDefault();
+            const lang = $(this).data('lang');
+            i18next.changeLanguage(lang).then(() => {
+                $('body').localize();
+                $('html').attr('lang', lang);
+                
+                updateLanguageUI(lang);
+            });
+        });
+        
+        // Function to update UI based on selected language
+        function updateLanguageUI(lang) {
+            // Update dropdown options
+            $('.lang-option').removeClass('active');
+            $(`.lang-option[data-lang="${lang}"]`).addClass('active');
+        }
+        
+        // Set Thai as default active language button on load
+        $(document).ready(function() {
+            updateLanguageUI('th');
+        });
+    </script>
 
     <script src="/static/script.js"></script>
 </body>

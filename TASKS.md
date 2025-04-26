@@ -68,4 +68,24 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [ ] Add example requests and responses
 - [ ] Deploy application (if applicable)
     - [ ] Prepare for production deployment
-    - [ ] Configure environment for production 
+    - [ ] Configure environment for production
+
+# Portfolio/Weekend Project Tasks
+
+A track of tasks related to adding additional examples of bottle assessment to the user manual.
+
+## Completed Tasks
+- [x] Created initial analysis of ClaimBottle AI application functionality
+- [x] Identified need for more detailed examples in user manual
+- [x] Implemented additional examples in the user manual to show both claimable and unclaimable scenarios
+- [x] Added a more nuanced unclaimable example showing partial damage patterns
+- [x] Added example of partially damaged but unclaimable bottle to manual.html
+- [x] Updated translations in both Thai and English locale files
+
+## In Progress Tasks
+- [ ] Review the updated manual for consistency and clarity
+
+## Upcoming Tasks
+- [ ] Test the manual with actual users to ensure examples are clear and helpful
+- [ ] Consider adding more visual aids or diagrams to illustrate damage patterns
+- [ ] Explore possibility of adding animation or interactive elements to better explain the assessment criteria 
