@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual - ClaimBottle AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- i18next libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/i18next@21.6.10/i18next.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.2/i18nextHttpBackend.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-browser-languagedetector@6.1.3/i18nextBrowserLanguageDetector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
+    <style>
+        .manual-content {
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        .manual-section {
+            margin-bottom: 2rem;
+        }
+        .manual-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .manual-section h3 {
+            color: var(--primary-dark);
+            margin: 1.5rem 0 0.75rem;
+        }
+        .step {
+            display: flex;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .back-button {
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .back-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        .example-img {
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        .assessment-example {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .checkmark {
+            color: #0ead69;
+            font-weight: bold;
+        }
+        .xmark {
+            color: #e63946;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f4f8;
+        }
+        .criteria-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <nav class="nav-menu">
+            <a href="/" class="nav-menu-item">
+                <i class="fas fa-home"></i> <span data-i18n="nav_home">หน้าหลัก</span>
+            </a>
+            <a href="/manual" class="nav-menu-item active">
+                <i class="fas fa-book"></i> <span data-i18n="nav_manual">คู่มือการใช้งาน</span>
+            </a>
+            <div class="language-dropdown">
+                <a href="#" class="nav-menu-item">
+                    <i class="fas fa-globe"></i> <span data-i18n="language">ภาษา</span>
+                </a>
+                <div class="language-dropdown-content">
+                    <a href="#" class="lang-option" data-lang="th">ไทย</a>
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                </div>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h1 data-i18n="manual.title">ClaimBottle AI - คู่มือการใช้งาน</h1>
+            <p class="subtitle" data-i18n="manual.subtitle">วิธีการใช้งานระบบและการอ่านผลประเมินความเสียหายของขวด</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="manual-content">
+            <div class="manual-section">
+                <h2 data-i18n="manual.intro_title">แนะนำระบบ ClaimBottle AI</h2>
+                <p data-i18n="manual.intro_text">ClaimBottle AI เป็นระบบที่ใช้เทคโนโลยี AI ในการประเมินความเสียหายของขวดเบียร์ช้าง เพื่อตัดสินว่าสามารถเคลมได้หรือไม่ ระบบนี้จะวิเคราะห์รูปภาพหรือวิดีโอของขวดที่เสียหาย และให้ผลการประเมินโดยละเอียดพร้อมคำอธิบาย</p>
+                
+                <h3 data-i18n="manual.key_features">คุณสมบัติหลัก</h3>
+                <ul>
+                    <li data-i18n="manual.feature1">รองรับการอัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4)</li>
+                    <li data-i18n="manual.feature2">วิเคราะห์สภาพขวดตามส่วนประกอบหลัก (ฝา, คอ, ตัวขวด, ก้นขวด)</li>
+                    <li data-i18n="manual.feature3">คำนวณคะแนนความสมบูรณ์เป็นเปอร์เซ็นต์</li>
+                    <li data-i18n="manual.feature4">ให้ผลการประเมินและคำอธิบายทั้งภาษาไทยและอังกฤษ</li>
+                    <li data-i18n="manual.feature5">แสดงสถิติการใช้งาน AI สำหรับการวิเคราะห์</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2 data-i18n="manual.how_to_use">วิธีการใช้งาน</h2>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 data-i18n="manual.step1_title">อัปโหลดรูปภาพหรือวิดีโอของขวด</h3>
+                        <p data-i18n="manual.step1_desc">คลิกที่พื้นที่อัปโหลดหรือลากไฟล์มาวาง คุณสามารถอัปโหลดได้ทั้งรูปภาพหลายรูป (JPG, PNG) หรือวิดีโอหนึ่งไฟล์ (MP4) ขนาดไฟล์สูงสุดคือ 10MB สำหรับรูปภาพและ 50MB สำหรับวิดีโอ</p>
+                        <p data-i18n="manual.step1_note"><strong>หมายเหตุ:</strong> ถ่ายรูปให้เห็นขวดชัดเจน ครบทุกส่วน และมีแสงเพียงพอ หากเป็นวิดีโอควรถ่ายให้เห็นขวดรอบด้าน</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 data-i18n="manual.step2_title">ตรวจสอบตัวอย่างสื่อที่อัปโหลด</h3>
+                        <p data-i18n="manual.step2_desc">หลังจากอัปโหลดเสร็จ ระบบจะแสดงตัวอย่างรูปภาพหรือวิดีโอที่คุณเลือก ตรวจสอบว่าเป็นไฟล์ที่ถูกต้องและมีคุณภาพเพียงพอสำหรับการวิเคราะห์</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 data-i18n="manual.step3_title">คลิกปุ่ม "ประเมินความเสียหายของขวด"</h3>
+                        <p data-i18n="manual.step3_desc">เมื่อคุณพร้อมแล้ว ให้คลิกปุ่ม "ประเมินความเสียหายของขวด" เพื่อส่งข้อมูลไปวิเคราะห์ การประมวลผลอาจใช้เวลา 10-30 วินาที ขึ้นอยู่กับขนาดและจำนวนไฟล์</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 data-i18n="manual.step4_title">รับผลการประเมิน</h3>
+                        <p data-i18n="manual.step4_desc">หลังจากประมวลผลเสร็จสิ้น ระบบจะแสดงผลการประเมินพร้อมคำอธิบายทั้งภาษาไทยและอังกฤษ รวมถึงสถิติการใช้งาน AI</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="manual-section">
+                <h2 data-i18n="manual.understanding_results">วิธีการอ่านผลการประเมิน</h2>
+                
+                <h3 data-i18n="manual.results_format">รูปแบบผลลัพธ์</h3>
+                <p data-i18n="manual.results_desc">ผลการประเมินจะแสดงในรูปแบบต่อไปนี้:</p>
+                
+                <div class="assessment-example">
+                    <p><strong>การประเมินขวด:</strong></p>
+                    <p><span class="checkmark">✅</span> สภาพฝา: ฝายังอยู่และปิดแน่นหนา</p>
+                    <p><span class="checkmark">✅</span> สภาพคอ: คอขวดอยู่ในสภาพดี</p>
+                    <p><span class="checkmark">✅</span> สภาพตัวขวด: ตัวขวดอยู่ในสภาพดี มีรอยร้าวเล็กน้อย</p>
+                    <p><span class="checkmark">✅</span> สภาพก้นขวด: ก้นขวดสมบูรณ์ ไม่มีความเสียหาย</p>
+                    <p><span class="checkmark">✅</span> <strong>สรุป: สามารถเคลม</strong></p>
+                </div>
+                
+                <h3 data-i18n="manual.claim_examples">ตัวอย่างกรณีที่สามารถเคลมได้</h3>
+                <table class="criteria-table">
+                    <tr>
+                        <th data-i18n="manual.table_condition">สภาพขวด</th>
+                        <th data-i18n="manual.table_reason">เหตุผล</th>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.example1_condition">คอขวดแตกแต่ส่วนอื่นอยู่ในสภาพดี</td>
+                        <td data-i18n="manual.example1_reason">การแตกหักที่คอขวดเป็นจุดเปราะบาง และส่วนที่เหลืออยู่ในสภาพดี</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.example2_condition">ก้นขวดแยกออกแต่ขวดโดยรวมยังสมบูรณ์</td>
+                        <td data-i18n="manual.example2_reason">การแยกของก้นขวดเป็นลักษณะความเสียหายที่พบได้ และส่วนที่เหลือยังสมบูรณ์ดี</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.example3_condition">ขวดมีรอยร้าวแต่ยังรักษารูปทรงได้</td>
+                        <td data-i18n="manual.example3_reason">รอยร้าวที่ไม่ทำให้ขวดสูญเสียโครงสร้างหลักยังคงถือว่าอยู่ในเกณฑ์ที่เคลมได้</td>
+                    </tr>
+                </table>
+                
+                <h3 data-i18n="manual.unclaim_examples">ตัวอย่างกรณีที่ไม่สามารถเคลมได้</h3>
+                <table class="criteria-table">
+                    <tr>
+                        <th data-i18n="manual.table_condition">สภาพขวด</th>
+                        <th data-i18n="manual.table_reason">เหตุผล</th>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.unclaim1_condition">ขวดแตกละเอียด มีชิ้นส่วนหลายชิ้น</td>
+                        <td data-i18n="manual.unclaim1_reason">การแตกเป็นชิ้นเล็กชิ้นน้อยทำให้ไม่สามารถเคลมได้</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.unclaim2_condition">ไม่ใช่ขวดเบียร์ช้าง</td>
+                        <td data-i18n="manual.unclaim2_reason">ระบบรองรับเฉพาะขวดเบียร์ช้างเท่านั้น</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.unclaim3_condition">ขวดสูญเสียโครงสร้างหลัก</td>
+                        <td data-i18n="manual.unclaim3_reason">ขวดที่สูญเสียโครงสร้างหลักหรือมีความเสียหายรุนแรงจะไม่สามารถเคลมได้</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.unclaim4_condition">ขวดมีส่วนบนสมบูรณ์แต่ส่วนล่างเสียหายมาก</td>
+                        <td data-i18n="manual.unclaim4_reason">แม้ฝาและคอขวดจะสมบูรณ์ แต่ความเสียหายรุนแรงที่ตัวขวดและก้นขวดทำให้โครงสร้างโดยรวมต่ำกว่า 80% จึงไม่สามารถเคลมได้</td>
+                    </tr>
+                </table>
+                
+                <h3 data-i18n="manual.detailed_example">ตัวอย่างการประเมินโดยละเอียด (ไม่สามารถเคลมได้)</h3>
+                <div class="assessment-example">
+                    <p><strong>การประเมินขวด:</strong></p>
+                    <p><span class="checkmark">✅</span> สภาพฝา: ฝาอยู่ในสภาพสมบูรณ์และปิดแน่นหนา (90%)</p>
+                    <p><span class="checkmark">✅</span> สภาพคอ: คอขวดอยู่ในสภาพดีส่วนใหญ่ มีรอยบิ่นเล็กน้อยที่ขอบ (85%)</p>
+                    <p><span class="xmark">❌</span> สภาพตัวขวด: เสียหายรุนแรง มีรอยแตกร้าวขนาดใหญ่หลายรอยกระจายเป็นรูปแบบกิ่งก้านทั่วทั้งขวดและมีชิ้นส่วนหลายชิ้นหายไป (40%)</p>
+                    <p><span class="xmark">❌</span> สภาพก้นขวด: ก้นขวดหลุดออกบางส่วน มีเศษแก้วภายในที่มองเห็นได้และโครงสร้างไม่มั่นคง (35%)</p>
+                    <p><span class="xmark">❌</span> <strong>ไม่สามารถเคลม</strong> (สภาพโดยรวม: 62%)</p>
+                    <p>แม้ว่าส่วนบนของขวดช้างจะอยู่ในสภาพดีโดยมีฝาที่สมบูรณ์และคอที่เสียหายเพียงเล็กน้อย แต่ความเสียหายรุนแรงต่อโครงสร้างของตัวขวดและก้นขวดทำให้ไม่สามารถเคลมได้ การแตกร้าวที่กระจายทั่วส่วนล่างและการมีเศษแก้วภายในสร้างความเสี่ยงด้านความปลอดภัยที่สำคัญ แม้ว่าบางส่วนจะอยู่ในสภาพที่ยอมรับได้ แต่ความสมบูรณ์โดยรวมต่ำกว่าเกณฑ์ 80% ที่จำเป็นสำหรับการเคลม</p>
+                </div>
+            </div>
+
+            <div class="manual-section">
+                <h2 data-i18n="manual.usage_stats">ทำความเข้าใจสถิติการใช้งาน AI</h2>
+                <p data-i18n="manual.stats_desc">ในส่วนล่างของผลการประเมิน คุณจะเห็นสถิติการใช้งาน AI ซึ่งแสดงข้อมูลเกี่ยวกับทรัพยากรที่ใช้ในการวิเคราะห์:</p>
+                <ul>
+                    <li data-i18n="manual.stats1"><strong>โทเค็นขาเข้า (Input Tokens):</strong> จำนวนโทเค็นที่ใช้สำหรับส่งข้อมูลเข้าสู่ AI</li>
+                    <li data-i18n="manual.stats2"><strong>โทเค็นขาออก (Output Tokens):</strong> จำนวนโทเค็นที่ใช้สำหรับผลลัพธ์จาก AI</li>
+                    <li data-i18n="manual.stats3"><strong>ค่าใช้จ่ายรวม (Total Cost):</strong> ค่าใช้จ่ายโดยประมาณสำหรับการประมวลผลครั้งนี้</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2 data-i18n="manual.troubleshooting">การแก้ไขปัญหาเบื้องต้น</h2>
+                <h3 data-i18n="manual.common_issues">ปัญหาที่พบบ่อย</h3>
+                <table class="criteria-table">
+                    <tr>
+                        <th data-i18n="manual.table_issue">ปัญหา</th>
+                        <th data-i18n="manual.table_solution">วิธีแก้ไข</th>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.error1">ไม่สามารถอัปโหลดไฟล์ได้</td>
+                        <td data-i18n="manual.solution1">ตรวจสอบว่าไฟล์ของคุณเป็นรูปแบบที่รองรับ (JPG, PNG, MP4) และมีขนาดไม่เกินขีดจำกัด (10MB สำหรับรูปภาพ, 50MB สำหรับวิดีโอ)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.error2">การประมวลผลใช้เวลานานเกินไป</td>
+                        <td data-i18n="manual.solution2">อาจเกิดจากขนาดไฟล์ใหญ่เกินไปหรือการเชื่อมต่ออินเทอร์เน็ตช้า ลองลดขนาดไฟล์หรือใช้ไฟล์ที่มีขนาดเล็กลง</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="manual.error3">ผลการประเมินไม่ตรงกับความคาดหวัง</td>
+                        <td data-i18n="manual.solution3">ลองถ่ายรูปใหม่ให้เห็นชัดเจนยิ่งขึ้น มุมมองที่หลากหลาย และมีแสงที่เพียงพอ</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="manual-section">
+                <h2 data-i18n="manual.tips">เคล็ดลับการใช้งาน</h2>
+                <ul>
+                    <li data-i18n="manual.tip1">ถ่ายรูปหรือวิดีโอขวดในแสงธรรมชาติหรือแสงที่เพียงพอเพื่อให้เห็นรายละเอียดชัดเจน</li>
+                    <li data-i18n="manual.tip2">หากเป็นไปได้ ถ่ายรูปขวดจากหลายมุมเพื่อให้เห็นความเสียหายรอบด้าน</li>
+                    <li data-i18n="manual.tip3">วางชิ้นส่วนที่แตกหักไว้ใกล้กับขวดเพื่อให้ระบบสามารถประเมินได้ครบถ้วน</li>
+                    <li data-i18n="manual.tip4">หากใช้วิดีโอ ควรถ่ายช้าๆ รอบขวดให้ครบทุกด้าน</li>
+                    <li data-i18n="manual.tip5">ตรวจสอบให้แน่ใจว่าโลโก้และฉลากของเบียร์ช้างปรากฏชัดเจนในรูปภาพหรือวิดีโอ</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2025 ClaimBottle AI | เครื่องมือประเมินการเคลมความเสียหายขวด</p>
+        </div>
+    </footer>
+
+    <!-- Added i18n initialization script -->
+    <script>
+        // Initialize i18next
+        i18next
+            .use(i18nextHttpBackend)
+            .use(i18nextBrowserLanguageDetector)
+            .init({
+                fallbackLng: 'th',
+                debug: true,
+                backend: {
+                    loadPath: '/static/locales/{{lng}}.json'
+                },
+                ns: ['translation', 'manual'],
+                defaultNS: 'translation'
+            }).then(function(t) {
+                jqueryI18next.init(i18next, $, { useOptionsAttr: true });
+                $('body').localize(); // Apply translations to the entire page
+                
+                // Set default language to Thai
+                i18next.changeLanguage('th');
+                
+                // Set active language class
+                updateLanguageUI('th');
+            });
+
+        // Language switcher buttons
+        $(document).on('click', '.lang-option', function(e) {
+            e.preventDefault();
+            const lang = $(this).data('lang');
+            i18next.changeLanguage(lang).then(() => {
+                $('body').localize();
+                $('html').attr('lang', lang);
+                
+                updateLanguageUI(lang);
+            });
+        });
+        
+        // Function to update UI based on selected language
+        function updateLanguageUI(lang) {
+            // Update dropdown options
+            $('.lang-option').removeClass('active');
+            $(`.lang-option[data-lang="${lang}"]`).addClass('active');
+        }
+        
+        // Set Thai as default active language button on load
+        $(document).ready(function() {
+            updateLanguageUI('th');
+        });
+    </script>
+</body>
+</html> 
