@@ -6,45 +6,6 @@ This module contains prompt templates used across the application.
 
 # Story generation prompt template used for OpenAI vision model
 
-# Characteristic from gpt-4o-mini =========================================================================================================
-# CLAIM_CRITERIAS = """
-# 1.	Type: All bottles are green glass, typically used for beer packaging.
-# 2.	Breakage:
-#   o	Varied degrees of breakage, with several exhibiting significant jagged breaks and others featuring clean separations.
-#   o	Some have irregular and violent break patterns, indicating rough handling or impact.
-# 3.	Shards:
-#   o	Multiple sharp edges and several large shards visible in most cases, posing safety hazards.
-#   o	Many bottles contain numerous small, sharp fragments scattered around.
-# 4.	Condition:
-#   o   Most bottles remain mostly intact below the break but are generally deemed unusable due to structural instability.
-#   o	Some bottles retain intact bases but have unusable necks or tops.
-# 5.	Caps: Multiple examples show that caps remain attached, highlighting that liquid contents may have been present before breakage.
-# 6.	Liquid Presence: Signs of liquid spillage are evident in several cases, indicating recent use.
-# 7.	Safety Risks: The presence of sharp edges from breakage raises significant safety concerns across nearly all bottles.
-# 8.	Reuse Potential: Only a few bottles might still be usable, while most will require careful handling due to sharp shards.
-# 9.	Impact Residue: Indicators of rough impacts are noted in several descriptions, suggesting prior violent handling or dropping.
-# 10. Structural Integrity: Several bottles show cracks within the body, indicating impending failure despite partial integrity being maintained.
-# """
-
-# UNCLAIM_CRITERIAS = """
-# 1.	Type: All observed bottles are green glass, typically indicating beer packaging.
-# 2.	Breakage:
-#   o	Most bottles exhibit jagged breaks, particularly evident at the neck or top sections.
-#   o	Several show extensive fragmentation, indicating a significant impact or drop.
-# 3.	Shards:
-#   o	Numerous sharp edges and a combination of large and small shards are noted, raising safety concerns.
-#   o	Various bottles have visibly jagged pieces scattered around, suggesting violent breakage.
-# 4.	Condition:
-#   o	Many bottles are mostly intact below the break but are deemed unusable due to instability from significant upper damage.
-#   o	Some bottles retain their caps, indicating contents may have been present at the time of breakage.
-# 5.	Liquid Presence: Visible liquid spills in some instances suggest that the bottles were recently in use prior to breaking.
-# 6.	Safety Risks: Sharp edges from broken glass pose substantial safety hazards across all bottles.
-# 7.	Structural Integrity: Compromised structures are a common theme, making nearly all bottles unsafe for handling.
-# 8.	Fragmentation: The extent of fragmentation across the bottles reveals a pattern of severe breakage, indicating high impacts.
-# 9.	Indications of Use: Several descriptions highlight the presence of liquid, reinforcing the likelihood that these bottles were filled prior to being damaged.
-# """
-# ========================================================================================================================================
-
 # Characteristic from gpt-4.1 =========================================================================================================
 CLAIM_CRITERIAS = """
 1.	Repeated Break Locations
@@ -110,47 +71,6 @@ UNCLAIM_CRITERIAS = """
 """
 # ========================================================================================================================================
 
-
-# STORY_GENERATION_PROMPT="""
-# You will receive an image or multiple images of one bottle or a video of a broken bottle.
-# Your task is to classify claim or unclaim based on the provided images or video and give reasons why you decide to do that.
-# The answer have to specify that the bottle can claim or unclaim and which part of the bottle has broken
-# and evaluate condition of completeness of the bottle as percentage if it below 80% it unclaim otherwise it can claim
-
-# You will receive the image and examine to provide an accurate answer.
-
-# # Steps
-# 1. **Detect brand of bottle:**
-#    - Check whether what brand is this bottle
-#    - if it's "Chang" or "ช้าง" need to be considered in the next step
-#    - if it is not "Chang" or "ช้าง" response as unclaim without consider next step and give a reason "This bottle is not brand Chang cannot claim".
-# 2. **Examine each part of the bottle:**
-#    - **There are 4 main parts of a bottle** 1.cap 2.neck 3.body 4.bottom
-#    - **Check the cap** Is there the cap? Is it thighly close?
-#    - **Check the neck** Is there still the neck? Is it break or damage? If it not damage too much it can claim
-#    - **Check the body** Is there still the body? Is it break or damage? If it not damage too much it can claim
-#    - **Check the bottom** Is there still the bottom? Is it break or damage? If it not damage too much it can claim
-#    - **Assess the overall condition of the bottle:** calculate score as percentage of condition of completeness of the bottle.
-# 3. **Deciding calim or unclaim:**
-#    - From the evaluated score decide whether it can claim if the score higher than 80% otherwise it unclaim.
- 
-# # Notes
-# - Always prioritize accuracy and clarity in your responses.
-# - Always answer claim or unclaim and reasons
-# - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
- 
-# # Example
-# - Can claim condition(80%) because the bottom has broken but overall still intact.
-# - Can claim condition(80%) because the neck of the bottle has broken but the shatters are still intact.
-# - Unclaim condition(50%) because the bottle has broken and most of shatters has missed.
-# - Unclaim condition(50%) beacuse the body of the bottle has missed.
- 
-# # Output format
-# Return ONLY a JSON object with these fields:
-# - english: Answer claim or unclaim with reasons
-# - thai: The description translated to Thai
-# """
-
 NEW_PROMPT = f"""
 You will receive an image or multiple images of one bottle or a video of a broken bottle.
 Your task is to classify claim or unclaim based on the provided images or video.
@@ -168,22 +88,27 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 3. **Keys characteristics of unclaimable bottle**
    {UNCLAIM_CRITERIAS}
 
-4. **Detect, examine and assess score for each part of the bottle:**
+4. **Detect, examine for each part of the bottle:**
    - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
-   - **Check the cap:** Is there the cap? Is it tightly closed?
-   - **Check the neck:** Is there still the neck? Is it broken or damaged?
-   - **Check the body:** Is there still the body? Is it broken or damaged?
-   - **Check the bottom:** Is there still the bottom? If there is a small damage on the bottom or Base Separation, it is considered as claim.
+   - **Check the cap:** Is there the cap? Is it tightly closed? if so, it can claim checkmarks (✅).
+   - **Check the neck:** Is there still the neck? If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
+   - **Check the body:** Is there still the body? if there is small damage consider as claim checkmarks (✅).
+   - **Check the bottom:** Is there still the bottom? If there is a small damage on the bottom or base separation, it is considered as claim checkmarks (✅).
 
 5. **Decide claim or unclaim, consider in order:**
-   - If there is just only base separation is considered as claim.
-   - If there is a neck seperation but not break into a small shatters is considered as claim.
+   - If the bottle completely intact, it can claim checkmarks (✅).
+   - If the cap separate from the main body and tightly closed, it can claim checkmarks (✅).
+   - If the bottom is missing, it cannot claim checkmarks (❌).
+   - If the bottom detached but it still present, it can claim checkmarks (✅).
+   - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
+   - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
 
 # Notes
 - Always prioritize accuracy and clarity in your responses.
 - Always answer claim or unclaim.
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
+- Only if all conditions are met can be consider as claim.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
 
 # Output Format
