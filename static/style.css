@@ -720,6 +720,29 @@ footer p {
     gap: 0.5rem;
 }
 
+.document-button {
+    background-color: white;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(78, 84, 200, 0.2);
+    transition: var(--transition);
+    display: inline-block;
+    position: absolute;
+    right: 0;
+}
+
+.document-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);
+    color: white !important; /* Keep text white on hover */
+}
+
+.document-button:active {
+    transform: translateY(1px);
+}
+
 .submit-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);
@@ -833,3 +856,43 @@ footer p {
     background-color: var(--primary-light);
     border-radius: 4px;
 } 
+
+
+.floating-docs-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.floating-docs-button i {
+    font-size: 1.5rem;
+}
+
+.floating-docs-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(78, 84, 200, 0.4);
+}
+
+@media (max-width: 768px) {
+    .floating-docs-button {
+        width: 3rem;
+        height: 3rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+    
+    .floating-docs-button i {
+        font-size: 1.2rem;
+    }
+}

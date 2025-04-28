@@ -56,7 +56,7 @@ CLAIM_CRITERIAS = """
   o	Large and medium shards are common, often accompanied by numerous small fragments.
 4.	Detached Neck and Cap
   o	In cases of neck/shoulder fracture, the neck segment (usually with the cap still sealed) is separated cleanly from the main body and often placed beside it.
-5.	Base Separation
+5.	Base Separation is considered as claim
   o	Several bottles display a relatively clean separation of the base/bottom, often forming a “cap” of glass left aside.
 6.	Visible Internal Cracks
   o	Many bottles show pronounced internal cracks, sometimes running through the label area or the full length of the body, indicating propagation of stress.
@@ -159,8 +159,8 @@ and evaluate the condition of completeness of the bottle as a percentage (if bel
 
 # Steps
 1. **Detect brand of bottle:**
-   - Check whether what brand is this bottle
-   - if it's "Chang" or "ช้าง" need to be considered in the next step
+   - Check whether what brand is this bottle.
+   - if it's "Chang" or "ช้าง" need to be considered in the next step.
    - if it is not "Chang" or "ช้าง" response as unclaim without considering next steps and give a reason "This bottle is not brand Chang cannot claim".
 
 2. **Keys characteristics of claimable bottle**
@@ -171,20 +171,21 @@ and evaluate the condition of completeness of the bottle as a percentage (if bel
 
 4. **Detect, examine and assess score for each part of the bottle:**
    - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
-   - **Check the cap:** Is there the cap? Is it tightly closed? Calculate score as percentage of this part
-   - **Check the neck:** Is there still the neck? Is it broken or damaged? Calculate score as percentage of this part
-   - **Check the body:** Is there still the body? Is it broken or damaged? Calculate score as percentage of this part
-   - **Check the bottom:** Is there still the bottom? Is it broken or damaged? Calculate score as percentage of this part
+   - **Check the cap:** Is there the cap? Is it tightly closed? Calculate score as percentage of this part.
+   - **Check the neck:** Is there still the neck? Is it broken or damaged? Calculate score as percentage of this part.
+   - **Check the body:** Is there still the body? Is it broken or damaged? Calculate score as percentage of this part.
+   - **Check the bottom:** Is there still the bottom? If there is a little damage on the bottom or Base Separation, it is considered as claim.
 
 5. **Decide claim or unclaim:**
+   - If there is just only base or neck separation is considered as claim.
    - From the evaluated scores, decide whether it can claim if the overall score is higher than 80%, otherwise it's unclaim.
- 
+
 # Notes
 - Always prioritize accuracy and clarity in your responses.
 - Always answer claim or unclaim with clear reasons.
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
- 
+
 # Output Format
 For each assessment, use the following format:
 
@@ -193,9 +194,9 @@ For each assessment, use the following format:
 ✅/❌ [Neck condition]
 ✅/❌ [Body condition]
 ✅/❌ [Bottom condition]
-✅/❌ **CLAIM/UNCLAIM** [Overall percentage and final decision]
+✅/❌ **CLAIM/UNCLAIM** [final decision]
 
 Then provide a JSON object with:
-- english: Use output format to answer
-- thai: The description translated to Thai
+- english: Use output format to answer.
+- thai: The description translated to Thai.
 """
