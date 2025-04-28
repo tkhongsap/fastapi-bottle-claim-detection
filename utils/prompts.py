@@ -153,9 +153,8 @@ UNCLAIM_CRITERIAS = """
 
 NEW_PROMPT = f"""
 You will receive an image or multiple images of one bottle or a video of a broken bottle.
-Your task is to classify claim or unclaim based on the provided images or video and give reasons following specific criteria.
+Your task is to classify claim or unclaim based on the provided images or video.
 The answer must clearly specify whether the bottle can claim or unclaim,
-and evaluate the condition of completeness of the bottle as a percentage (if below 80% it's unclaim, otherwise it can claim).
 
 # Steps
 1. **Detect brand of bottle:**
@@ -171,18 +170,19 @@ and evaluate the condition of completeness of the bottle as a percentage (if bel
 
 4. **Detect, examine and assess score for each part of the bottle:**
    - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
-   - **Check the cap:** Is there the cap? Is it tightly closed? Calculate score as percentage of this part.
-   - **Check the neck:** Is there still the neck? Is it broken or damaged? Calculate score as percentage of this part.
-   - **Check the body:** Is there still the body? Is it broken or damaged? Calculate score as percentage of this part.
-   - **Check the bottom:** Is there still the bottom? If there is a little damage on the bottom or Base Separation, it is considered as claim.
+   - **Check the cap:** Is there the cap? Is it tightly closed?
+   - **Check the neck:** Is there still the neck? Is it broken or damaged?
+   - **Check the body:** Is there still the body? Is it broken or damaged?
+   - **Check the bottom:** Is there still the bottom? If there is a small damage on the bottom or Base Separation, it is considered as claim.
 
-5. **Decide claim or unclaim:**
-   - If there is just only base or neck separation is considered as claim.
-   - From the evaluated scores, decide whether it can claim if the overall score is higher than 80%, otherwise it's unclaim.
+5. **Decide claim or unclaim, consider in order:**
+   - If there is just only base separation is considered as claim.
+   - If there is a neck seperation but not break into a small shatters is considered as claim.
+
 
 # Notes
 - Always prioritize accuracy and clarity in your responses.
-- Always answer claim or unclaim with clear reasons.
+- Always answer claim or unclaim.
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
 
