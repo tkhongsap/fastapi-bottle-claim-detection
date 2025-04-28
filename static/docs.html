@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgStory - Documentation</title>
+    <title>Claim detection - Documentation</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
         .docs-container {
             max-width: 900px;
             margin: 0 auto;
@@ -206,21 +211,26 @@
 <body>
     <header class="hero">
         <div class="hero-content">
-            <h1>ImgStory Documentation</h1>
-            <p class="subtitle">Learn how to use the ImgStory caption generator for your photos and videos</p>
+            <h1>App Documentation</h1>
+            <p class="subtitle">Learn how to use the Claim detection for your photos and videos</p>
         </div>
     </header>
 
     <main class="docs-container">
         <div class="card">
             <div class="card-header">
-                <h2><i class="fas fa-book"></i> Getting Started</h2>
-                <p>Everything you need to know about using ImgStory effectively</p>
+                <div>
+                    <h2><i class="fas fa-book"></i> Getting Started</h2>
+                    <p>Everything you need to know about using Claim detection</p>
+                </div>
+                <a href="/" class="back-to-app">
+                    <i class="fas fa-arrow-left"></i> Back to Claim detection
+                </a>
             </div>
             <div class="card-body">
                 <div class="docs-section">
-                    <h2><i class="fas fa-question-circle"></i> What is ImgStory?</h2>
-                    <p>ImgStory is an AI-powered caption generator that creates compelling descriptions for your photos and videos. It analyzes your media content using advanced AI technology and generates engaging captions in both English and Thai languages.</p>
+                    <h2><i class="fas fa-question-circle"></i> What is Claim detection?</h2>
+                    <p>Claim detection is an AI-powered images and video detection that classify your bottles whether it claimable or unclaim. It analyzes your media content using advanced AI technology and classify claim or unclaim base on a bottle condition in both English and Thai languages.</p>
                     
                     <h3>Key Features</h3>
                     <div class="feature-card">
@@ -229,7 +239,7 @@
                         </div>
                         <div class="feature-content">
                             <h3>Multiple Image Support</h3>
-                            <p>Upload multiple images at once to get captions that describe all your content together. Perfect for creating social media posts about events or experiences.</p>
+                            <p>Upload multiple images at once to get classification that your bottles are claimable or unclaim.</p>
                         </div>
                     </div>
                     
@@ -239,7 +249,7 @@
                         </div>
                         <div class="feature-content">
                             <h3>Video Analysis</h3>
-                            <p>Upload videos up to 50MB to have them analyzed and get detailed captions describing the content, scenes, and action happening in your video.</p>
+                            <p>Upload videos up to 50MB to have them analyzed and get an answer</p>
                         </div>
                     </div>
                     
@@ -255,7 +265,7 @@
                 </div>
                 
                 <div class="docs-section">
-                    <h2><i class="fas fa-map-signs"></i> How to Use ImgStory</h2>
+                    <h2><i class="fas fa-map-signs"></i> How to Use Claim detection</h2>
                     
                     <h3>Step-by-Step Guide</h3>
                     <ol class="steps-list">
@@ -298,7 +308,7 @@
                         <li>
                             <div class="step-number">4</div>
                             <div class="step-content">
-                                <h4>View and Use Your Captions</h4>
+                                <h4>View your result</h4>
                                 <p>Once processing is complete, you'll see two caption boxes:</p>
                                 <ul>
                                     <li><strong>English Caption:</strong> A detailed description in English</li>
@@ -318,10 +328,6 @@
                                     <li>Output Tokens: How much text was generated</li>
                                     <li>Total Cost: The equivalent cost in USD and Thai Baht</li>
                                 </ul>
-                                <div class="tip-box">
-                                    <h4><i class="fas fa-lightbulb"></i> Tip</h4>
-                                    <p>ImgStory is currently provided free of charge. The cost information is displayed for transparency and educational purposes only.</p>
-                                </div>
                             </div>
                         </li>
                     </ol>
@@ -332,108 +338,26 @@
                     
                     <h3>For Best Results with Images:</h3>
                     <ul>
-                        <li><strong>Use clear, high-quality images</strong> - While ImgStory can handle most images, clearer pictures yield better analysis.</li>
-                        <li><strong>Group related images together</strong> - When uploading multiple images, select ones that are related to get a coherent caption.</li>
-                        <li><strong>Balance quantity</strong> - Uploading 3-5 images typically gives the best results for event descriptions.</li>
+                        <li><strong>Use clear, high-quality images</strong> - While Claim detection can handle most images, clearer pictures yield better analysis.</li>
+                        <li><strong>Group related images together</strong> - When uploading multiple images, make sure that all of the images is the same bottle.</li>
+                        <li><strong>Balance quantity</strong> - Uploading 3-5 images typically gives the best results.</li>
                     </ul>
                     
                     <h3>For Best Results with Videos:</h3>
                     <ul>
-                        <li><strong>Keep videos concise</strong> - Shorter videos (30 seconds to 2 minutes) tend to get more focused captions.</li>
+                        <li><strong>Keep videos concise</strong> - Shorter videos (around 30 seconds) tend to get more focused captions.</li>
                         <li><strong>Ensure good lighting and clarity</strong> - The AI analyzes visual elements, so video quality matters.</li>
-                        <li><strong>Consider the content</strong> - Videos with clear subjects and actions will receive more detailed descriptions.</li>
+                        <li><strong>Consider the content</strong> - Videos with clear subjects and actions will receive more precise answer.</li>
                     </ul>
                 </div>
-                
-                <div class="docs-section">
-                    <h2><i class="fas fa-exclamation-circle"></i> Troubleshooting</h2>
-                    
-                    <h3>Common Issues and Solutions</h3>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--warning-color), #ffc107);">
-                            <i class="fas fa-file-upload"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>File Upload Problems</h3>
-                            <p><strong>Issue:</strong> "File size too large" error</p>
-                            <p><strong>Solution:</strong> Ensure your images are under 10MB each and videos under 50MB. You can use online tools to compress your media if needed.</p>
-                            
-                            <p><strong>Issue:</strong> "Unsupported file type" error</p>
-                            <p><strong>Solution:</strong> Make sure you're only uploading JPG/PNG for images or MP4 for videos. Convert your media to these formats if necessary.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--warning-color), #ffc107);">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Processing Errors</h3>
-                            <p><strong>Issue:</strong> "API rate limit exceeded" error</p>
-                            <p><strong>Solution:</strong> Wait a few minutes and try again. This means our service is experiencing high demand.</p>
-                            
-                            <p><strong>Issue:</strong> General processing error</p>
-                            <p><strong>Solution:</strong> Click the "Try Again" button. If the problem persists, try uploading fewer files or files with smaller sizes.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--warning-color), #ffc107);">
-                            <i class="fas fa-wifi"></i>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Connection Issues</h3>
-                            <p><strong>Issue:</strong> "Network error" message</p>
-                            <p><strong>Solution:</strong> Check your internet connection. Make sure you have a stable connection when uploading files and generating captions.</p>
-                            
-                            <p><strong>Issue:</strong> "Request timed out" error</p>
-                            <p><strong>Solution:</strong> This could happen with larger videos or during peak usage times. Try again with smaller files or during off-peak hours.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="docs-section">
-                    <h2><i class="fas fa-lightbulb"></i> Tips and Use Cases</h2>
-                    
-                    <h3>Social Media Content</h3>
-                    <p>Use ImgStory to quickly generate engaging captions for:</p>
-                    <ul>
-                        <li>Instagram posts and stories</li>
-                        <li>Facebook updates</li>
-                        <li>Twitter/X media posts</li>
-                        <li>TikTok video descriptions</li>
-                    </ul>
-                    
-                    <h3>Business Applications</h3>
-                    <p>ImgStory can help businesses with:</p>
-                    <ul>
-                        <li>Product descriptions for e-commerce listings</li>
-                        <li>Event recaps for corporate social media</li>
-                        <li>Educational content captions</li>
-                        <li>Accessibility improvements by providing detailed descriptions</li>
-                    </ul>
-                    
-                    <h3>Personal Use</h3>
-                    <p>Enhance your personal content with:</p>
-                    <ul>
-                        <li>Travel photo descriptions</li>
-                        <li>Family event summaries</li>
-                        <li>Memory preservation with detailed captions</li>
-                        <li>Bilingual captions for friends and family who speak different languages</li>
-                    </ul>
-                </div>
-                
-                <a href="/" class="back-to-app">
-                    <i class="fas fa-arrow-left"></i> Back to ImgStory
-                </a>
+
             </div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 ImgStory | Media Analysis Story Generator</p>
+            <p>&copy; 2025 Claim detection | Media Analysis Story Generator</p>
         </div>
     </footer>
 </body>
