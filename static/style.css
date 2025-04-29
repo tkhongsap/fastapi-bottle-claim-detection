@@ -816,6 +816,35 @@ footer p {
     gap: 0.5rem;
 }
 
+.menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+.document-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(78, 84, 200, 0.2);
+    transition: var(--transition);
+    display: inline-block;
+    position: relative;
+    right: 10;
+}
+
+.document-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);
+    color: white !important; /* Keep text white on hover */
+}
+
+.document-button:active {
+    transform: translateY(1px);
+}
+
 .submit-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);

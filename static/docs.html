@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim detection - Documentation</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .docs-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .docs-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .docs-section h2 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        .docs-section h3 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--primary-dark);
+        }
+        
+        .docs-section p, .docs-section li {
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+        
+        .docs-section ul, .docs-section ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        
+        .feature-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+        
+        .feature-content h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tip-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .tip-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .warning-box {
+            background-color: #fff5f5;
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .warning-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--danger-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .steps-list li {
+            counter-increment: step-counter;
+            display: flex;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-content h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .nav-tab-item {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-tab-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-tab-item:hover:not(.active) {
+            background-color: #f0f2ff;
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .feature-card {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .feature-icon {
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        .back-to-app {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .back-to-app:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-content">
+            <h1>App Documentation</h1>
+            <p class="subtitle">Learn how to use the Claim detection for your photos and videos</p>
+        </div>
+    </header>
+
+    <main class="docs-container">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2><i class="fas fa-book"></i> Getting Started</h2>
+                    <p>Everything you need to know about using Claim detection</p>
+                </div>
+                <a href="/" class="back-to-app">
+                    <i class="fas fa-arrow-left"></i> Back to Claim detection
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="docs-section">
+                    <h2><i class="fas fa-question-circle"></i> What is Claim detection?</h2>
+                    <p>Claim detection is an AI-powered images and video detection that classify your bottles whether it claimable or unclaim. It analyzes your media content using advanced AI technology and classify claim or unclaim base on a bottle condition in both English and Thai languages.</p>
+                    
+                    <h3>Key Features</h3>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Multiple Image Support</h3>
+                            <p>Upload multiple images at once to get classification that your bottles are claimable or unclaim.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Video Analysis</h3>
+                            <p>Upload videos up to 50MB to have them analyzed and get an answer</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Bilingual Captions</h3>
+                            <p>Get captions in both English and Thai languages, making your content accessible to a wider audience without any additional translation work.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="docs-section">
+                    <h2><i class="fas fa-map-signs"></i> How to Use Claim detection</h2>
+                    
+                    <h3>Step-by-Step Guide</h3>
+                    <ol class="steps-list">
+                        <li>
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Upload Your Media</h4>
+                                <p>Click on the upload area or drag and drop your files directly. You can upload either:</p>
+                                <ul>
+                                    <li>Multiple images (JPG or PNG format, max 10MB each)</li>
+                                    <li>One video (MP4 format, max 50MB)</li>
+                                </ul>
+                                <div class="tip-box">
+                                    <h4><i class="fas fa-lightbulb"></i> Tip</h4>
+                                    <p>You cannot mix images and videos in a single upload. If you want to analyze a video, make sure no images are selected.</p>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Review Your Selection</h4>
+                                <p>Check the previews of your uploaded files. You can remove any file by hovering over its preview and clicking the X button.</p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Generate Captions</h4>
+                                <p>Click the "Generate Captions" button. The system will begin analyzing your media, which may take a few moments depending on the size and number of files.</p>
+                                <div class="warning-box">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Note</h4>
+                                    <p>During the analysis, please do not leave the page or refresh your browser.</p>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>View your result</h4>
+                                <p>Once processing is complete, you'll see two caption boxes:</p>
+                                <ul>
+                                    <li><strong>English Caption:</strong> A detailed description in English</li>
+                                    <li><strong>Thai Caption:</strong> The same description translated into Thai</li>
+                                </ul>
+                                <p>You can copy each caption using the copy button in the top-right corner of each caption box.</p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Check Usage Statistics</h4>
+                                <p>At the bottom of the results, you'll see AI usage statistics showing:</p>
+                                <ul>
+                                    <li>Input Tokens: How much data was processed</li>
+                                    <li>Output Tokens: How much text was generated</li>
+                                    <li>Total Cost: The equivalent cost in USD and Thai Baht</li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="docs-section">
+                    <h2><i class="fas fa-star"></i> Best Practices</h2>
+                    
+                    <h3>For Best Results with Images:</h3>
+                    <ul>
+                        <li><strong>Use clear, high-quality images</strong> - While Claim detection can handle most images, clearer pictures yield better analysis.</li>
+                        <li><strong>Group related images together</strong> - When uploading multiple images, make sure that all of the images is the same bottle.</li>
+                        <li><strong>Balance quantity</strong> - Uploading 3-5 images typically gives the best results.</li>
+                    </ul>
+                    
+                    <h3>For Best Results with Videos:</h3>
+                    <ul>
+                        <li><strong>Keep videos concise</strong> - Shorter videos (around 30 seconds) tend to get more focused captions.</li>
+                        <li><strong>Ensure good lighting and clarity</strong> - The AI analyzes visual elements, so video quality matters.</li>
+                        <li><strong>Consider the content</strong> - Videos with clear subjects and actions will receive more precise answer.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claim detection | Media Analysis Story Generator</p>
+        </div>
+    </footer>
+</body>
+</html>

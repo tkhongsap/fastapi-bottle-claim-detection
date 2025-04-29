@@ -4,6 +4,11 @@ Prompt Templates
 This module contains prompt templates used across the application.
 """
 
+
+# Story generation prompt template used for OpenAI vision model
+
+# Characteristic from gpt-4.1 =========================================================================================================
+
 CLAIM_CRITERIAS = """
 1.	Repeated Break Locations
   o	Bottles frequently broke at structurally weak areas, specifically the neck/shoulder or the base/bottom.
@@ -14,8 +19,8 @@ CLAIM_CRITERIAS = """
   o	Large and medium shards are common, often accompanied by numerous small fragments.
 4.	Detached Neck and Cap
   o	In cases of neck/shoulder fracture, the neck segment (usually with the cap still sealed) is separated cleanly from the main body and often placed beside it.
-5.	Base Separation
-  o	Several bottles display a relatively clean separation of the base/bottom, often forming a "cap" of glass left aside.
+5.	Base Separation is considered as claim
+  o	Several bottles display a relatively clean separation of the base/bottom, often forming a “cap” of glass left aside.
 6.	Visible Internal Cracks
   o	Many bottles show pronounced internal cracks, sometimes running through the label area or the full length of the body, indicating propagation of stress.
 7.	Unopened/Sealed State at Time of Breakage
@@ -68,124 +73,130 @@ UNCLAIM_CRITERIAS = """
 """
 
 
-# # OLD_PROMPT template commented out
-# OLD_PROMPT = f"""
-# You will receive an image or multiple images of one bottle or a video of a broken bottle.
-# Your task is to classify claim or unclaim based on the provided images or video and give reasons following specific criteria.
-# The answer must clearly specify whether the bottle can claim or unclaim,
-# and evaluate the condition of completeness of the bottle as a percentage (if below 80% it's unclaim, otherwise it can claim).
+NEW_PROMPT = f"""
+You will receive an image or multiple images of one bottle or a video of a broken bottle.
+Your task is to classify claim or unclaim based on the provided images or video.
+The answer must clearly specify whether the bottle can claim or unclaim,
 
-# # Steps
-# 1. **Detect brand of bottle:**
-#    - Check whether what brand is this bottle
-#    - if it's "Chang" or "ช้าง" need to be considered in the next step
-#    - if it is not "Chang" or "ช้าง" response as unclaim without considering next steps and give a reason "This bottle is not brand Chang cannot claim".
+# Steps
+1. **Detect brand of bottle:**
+   - Check whether what brand is this bottle.
+   - if it's "Chang" or "ช้าง" need to be considered in the next step.
+   - if it is not "Chang" or "ช้าง" response as unclaim without considering next steps and give a reason "This bottle is not brand Chang cannot claim".
 
-# 2. **Keys characteristics of claimable bottle**
-#    {CLAIM_CRITERIAS}
+2. **Keys characteristics of claimable bottle**
+   {CLAIM_CRITERIAS}
 
-# 3. **Keys characteristics of unclaimable bottle**
-#    {UNCLAIM_CRITERIAS}
+3. **Keys characteristics of unclaimable bottle**
+   {UNCLAIM_CRITERIAS}
 
-# 4. **Detect, examine and assess score for each part of the bottle:**
-#    - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
-#    - **Check the cap:** Is there the cap? Is it tightly closed? Calculate score as percentage of this part
-#    - **Check the neck:** Is there still the neck? Is it broken or damaged? Calculate score as percentage of this part
-#    - **Check the body:** Is there still the body? Is it broken or damaged? Calculate score as percentage of this part
-#    - **Check the bottom:** Is there still the bottom? Is it broken or damaged? Calculate score as percentage of this part
+4. **Detect, examine for each part of the bottle:**
+   - **There are 4 main parts of a bottle:** 1.cap 2.neck 3.body 4.bottom
+   - **Check the cap:** Is there the cap? Is it tightly closed? if so, it can claim checkmarks (✅).
+   - **Check the neck:** Is there still the neck? If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
+   - **Check the body:** Is there still the body? if there is small damage consider as claim checkmarks (✅).
+   - **Check the bottom:** Is there still the bottom? If there is a small damage on the bottom or base separation, it is considered as claim checkmarks (✅).
 
-# 5. **Decide claim or unclaim:**
-#    - From the evaluated scores, decide whether it can claim if the overall score is higher than 80%, otherwise it's unclaim.
- 
-# # Notes
-# - Always prioritize accuracy and clarity in your responses.
-# - Always answer claim or unclaim with clear reasons.
-# - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
-# - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
- 
-# # Output Format
-# For each assessment, use the following format:
-
-# **Bottle Assessment:**
-# ✅/❌ [Cap condition]
-# ✅/❌ [Neck condition]
-# ✅/❌ [Body condition]
-# ✅/❌ [Bottom condition]
-# ✅/❌ **CLAIM/UNCLAIM** [Overall percentage and final decision]
-
-# Then provide a JSON object with:
-# - english: Use output format to answer
-# - thai: The description translated to Thai
-# """
+5. **Decide claim or unclaim, consider in order:**
+   - If the bottle completely intact, it can claim checkmarks (✅).
+   - If the cap separate from the main body and tightly closed, it can claim checkmarks (✅).
+   - If the bottom is missing, it cannot claim checkmarks (❌).
+   - If the bottom detached but it still present, it can claim checkmarks (✅).
+   - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
+   - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
 
-NEW_PROMPT = """
-You will receive 1-10 images OR a single video showing one glass bottle.
-Decide if the bottle is CLAIMABLE for refund and explain why.
+# Notes
+- Always prioritize accuracy and clarity in your responses.
+- Always answer claim or unclaim.
+- Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
+- Only if all conditions are met can be consider as claim.
+- Ensure reasoning steps logically lead to the conclusions before stating your final answer.
 
-────────────────────────────────────────
-## 0. REQUIRED FORMAT
-Return two blocks exactly in this order:
+# Output Format
+For each assessment, use the following format:
 
-### THOUGHT  - step-by-step reasoning
-### ANSWER   - end-user result
+**Bottle Assessment:**
+✅/❌ [Cap condition]
+✅/❌ [Neck condition]
+✅/❌ [Body condition]
+✅/❌ [Bottom condition]
+✅/❌ **CLAIM/UNCLAIM** [final decision]
 
-────────────────────────────────────────
-## 1. BRAND GATE
-If the label is not "Chang / ช้าง" →
-    THOUGHT: explain brand mismatch →
-    ANSWER: ❌ UNCLAIM ("Not Chang.") - end.
-
-────────────────────────────────────────
-## 2. PART-BY-PART INTEGRITY
-Estimate integrity % (0-100) for each part:
-
-| Part   | Guide for Integrity % |
-|--------|-----------------------|
-| Cap    | 100 = present and sealed 80 = present but loose <80 = damaged or missing |
-| Neck   | 100 = intact 80 = minor chips 60 = visible cracks <60 = fractured or missing |
-| Body   | 100 = 90 percent glass and no major cracks 80 = 80-90 percent intact or minor cracks 60 = 60-80 percent <60 = severe |
-| Bottom | 100 = intact 80 = minor chip 60 = cracked <60 = missing |
-
-────────────────────────────────────────
-## 3. SAFETY / RISK CHECKS   (✅/❌)
-* Sharp jagged shards
-* Detached neck or base
-* Extensive spider-web cracks
-* Liquid spillage / pressure break
-* Foreign debris / contamination
-
-If ≥ 1 items are ❌ → force UNCLAIM.
-
-────────────────────────────────────────
-## 4. CLAIM vs UNCLAIM RULE
-* Bottle is **CLAIMABLE** ⇢ **all four parts integrity ≥ 80 %** AND safety checks < 2 ❌
-* Otherwise ⇢ **UNCLAIMABLE**
-
-────────────────────────────────────────
-## 5. OUTPUT TEMPLATE
-
-### THOUGHT
-- Brand detected: …
-- Cap integrity … % (✅/❌ ≥ 80 ?)
-- Neck integrity … % (✅/❌)
-- Body integrity … % (✅/❌)
-- Bottom integrity … % (✅/❌)
-- Safety checklist: ✅/❌ …
-- Conclusion logic → …
-
-### ANSWER
-Bottle Assessment  
-✅/❌ Cap – …comment… (… %)  
-✅/❌ Neck – …comment… (… %)  
-✅/❌ Body – …comment… (… %)  
-✅/❌ Bottom – …comment… (… %)  
-➡ Overall: ✅ CLAIM / ❌ UNCLAIM
-
-```json
-{
-  "english": "<copy of ANSWER>",
-  "thai": "<คำแปลย่อเป็นภาษาไทย>"
-}
-```
+Then provide a JSON object with:
+- english: Use output format to answer.
+- thai: The description translated to Thai.
 """
+
+
+
+# NEW_PROMPT = """
+# You will receive 1-10 images OR a single video showing one glass bottle.
+# Decide if the bottle is CLAIMABLE for refund and explain why.
+
+# ────────────────────────────────────────
+# ## 0. REQUIRED FORMAT
+# Return two blocks exactly in this order:
+
+# ### THOUGHT  - step-by-step reasoning
+# ### ANSWER   - end-user result
+# ────────────────────────────────────────
+# ## 1. BRAND GATE
+# If the label is not "Chang / ช้าง" →
+#     THOUGHT: explain brand mismatch →
+#     ANSWER: ❌ UNCLAIM ("Not Chang.") - end.
+
+# ────────────────────────────────────────
+# ## 2. PART-BY-PART INTEGRITY
+# Estimate integrity % (0-100) for each part:
+
+# | Part   | Guide for Integrity % |
+# |--------|-----------------------|
+# | Cap    | 100 = present and sealed 80 = present but loose <80 = damaged or missing |
+# | Neck   | 100 = intact 80 = minor chips 60 = visible cracks <60 = fractured or missing |
+# | Body   | 100 = 90 percent glass and no major cracks 80 = 80-90 percent intact or minor cracks 60 = 60-80 percent <60 = severe |
+# | Bottom | 100 = intact 80 = minor chip 60 = cracked <60 = missing |
+
+# ────────────────────────────────────────
+# ## 3. SAFETY / RISK CHECKS   (✅/❌)
+# * Sharp jagged shards
+# * Detached neck or base
+# * Extensive spider-web cracks
+# * Liquid spillage / pressure break
+# * Foreign debris / contamination
+
+# If ≥ 1 items are ❌ → force UNCLAIM.
+
+# ────────────────────────────────────────
+# ## 4. CLAIM vs UNCLAIM RULE
+# * Bottle is **CLAIMABLE** ⇢ **all four parts integrity ≥ 80 %** AND safety checks < 2 ❌
+# * Otherwise ⇢ **UNCLAIMABLE**
+
+# ────────────────────────────────────────
+# ## 5. OUTPUT TEMPLATE
+
+# ### THOUGHT
+# - Brand detected: …
+# - Cap integrity … % (✅/❌ ≥ 80 ?)
+# - Neck integrity … % (✅/❌)
+# - Body integrity … % (✅/❌)
+# - Bottom integrity … % (✅/❌)
+# - Safety checklist: ✅/❌ …
+# - Conclusion logic → …
+
+# ### ANSWER
+# Bottle Assessment  
+# ✅/❌ Cap – …comment… (… %)  
+# ✅/❌ Neck – …comment… (… %)  
+# ✅/❌ Body – …comment… (… %)  
+# ✅/❌ Bottom – …comment… (… %)  
+# ➡ Overall: ✅ CLAIM / ❌ UNCLAIM
+
+# ```json
+# {
+#   "english": "<copy of ANSWER>",
+#   "thai": "<คำแปลย่อเป็นภาษาไทย>"
+# }
+# ```
+# >>>>>>> utils/prompts.py
+# """

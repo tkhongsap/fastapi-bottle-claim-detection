@@ -127,6 +127,20 @@ async def read_root(request: Request):
     except Exception as e:
         logger.exception(f"Error reading frontend HTML file: {e}")
         raise HTTPException(status_code=500, detail="Internal server error: Could not load frontend.")
+    
+@app.get('/document')
+async def getDocument():
+    index_html_path = SCRIPT_DIR / "static" / "docs.html"
+    if not index_html_path.is_file():
+        logger.error(f"Frontend HTML file not found at: {index_html_path}")
+        raise HTTPException(status_code=500, detail="Internal server error: Frontend not found.")
+    try:
+        async with aiofiles.open(index_html_path, mode='r') as f:
+            content = await f.read()
+        return HTMLResponse(content=content)
+    except Exception as e:
+        logger.exception(f"Error reading frontend HTML file: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error: Could not load frontend.")
 
 @app.get("/manual", response_class=HTMLResponse)
 async def read_manual(request: Request):
