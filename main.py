@@ -121,7 +121,7 @@ async def read_root(request: Request):
         logger.error(f"Frontend HTML file not found at: {index_html_path}")
         raise HTTPException(status_code=500, detail="Internal server error: Frontend not found.")
     try:
-        async with aiofiles.open(index_html_path, mode='r') as f:
+        async with aiofiles.open(index_html_path, mode='r', encoding='utf-8') as f:
             content = await f.read()
         return HTMLResponse(content=content)
     except Exception as e:
@@ -141,6 +141,21 @@ async def getDocument():
     except Exception as e:
         logger.exception(f"Error reading frontend HTML file: {e}")
         raise HTTPException(status_code=500, detail="Internal server error: Could not load frontend.")
+
+@app.get("/manual", response_class=HTMLResponse)
+async def read_manual(request: Request):
+    """Serves the user manual page."""
+    manual_html_path = SCRIPT_DIR / "static" / "manual.html"
+    if not manual_html_path.is_file():
+        logger.error(f"Manual HTML file not found at: {manual_html_path}")
+        raise HTTPException(status_code=404, detail="User manual not found.")
+    try:
+        async with aiofiles.open(manual_html_path, mode='r', encoding='utf-8') as f:
+            content = await f.read()
+        return HTMLResponse(content=content)
+    except Exception as e:
+        logger.exception(f"Error reading manual HTML file: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error: Could not load user manual.")
 
 @app.post("/analyze/")
 async def analyze_media_endpoint(

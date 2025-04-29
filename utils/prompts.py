@@ -4,9 +4,11 @@ Prompt Templates
 This module contains prompt templates used across the application.
 """
 
+
 # Story generation prompt template used for OpenAI vision model
 
 # Characteristic from gpt-4.1 =========================================================================================================
+
 CLAIM_CRITERIAS = """
 1.	Repeated Break Locations
   o	Bottles frequently broke at structurally weak areas, specifically the neck/shoulder or the base/bottom.
@@ -69,8 +71,9 @@ UNCLAIM_CRITERIAS = """
 13.	Consistency in Pattern
   o	The nature and pattern of breakage (location, crack type, fragmentation, etc.) is consistent across different bottles, suggesting a recurring problem (handling, process, or material flaw).
 """
-# ========================================================================================================================================
 
+
+<<<<<<< utils/prompts.py
 NEW_PROMPT = f"""
 You will receive an image or multiple images of one bottle or a video of a broken bottle.
 Your task is to classify claim or unclaim based on the provided images or video.
@@ -125,3 +128,76 @@ Then provide a JSON object with:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
 """
+=======
+
+
+# NEW_PROMPT = """
+# You will receive 1-10 images OR a single video showing one glass bottle.
+# Decide if the bottle is CLAIMABLE for refund and explain why.
+
+# ────────────────────────────────────────
+# ## 0. REQUIRED FORMAT
+# Return two blocks exactly in this order:
+
+# ### THOUGHT  - step-by-step reasoning
+# ### ANSWER   - end-user result
+# ────────────────────────────────────────
+# ## 1. BRAND GATE
+# If the label is not "Chang / ช้าง" →
+#     THOUGHT: explain brand mismatch →
+#     ANSWER: ❌ UNCLAIM ("Not Chang.") - end.
+
+# ────────────────────────────────────────
+# ## 2. PART-BY-PART INTEGRITY
+# Estimate integrity % (0-100) for each part:
+
+# | Part   | Guide for Integrity % |
+# |--------|-----------------------|
+# | Cap    | 100 = present and sealed 80 = present but loose <80 = damaged or missing |
+# | Neck   | 100 = intact 80 = minor chips 60 = visible cracks <60 = fractured or missing |
+# | Body   | 100 = 90 percent glass and no major cracks 80 = 80-90 percent intact or minor cracks 60 = 60-80 percent <60 = severe |
+# | Bottom | 100 = intact 80 = minor chip 60 = cracked <60 = missing |
+
+# ────────────────────────────────────────
+# ## 3. SAFETY / RISK CHECKS   (✅/❌)
+# * Sharp jagged shards
+# * Detached neck or base
+# * Extensive spider-web cracks
+# * Liquid spillage / pressure break
+# * Foreign debris / contamination
+
+# If ≥ 1 items are ❌ → force UNCLAIM.
+
+# ────────────────────────────────────────
+# ## 4. CLAIM vs UNCLAIM RULE
+# * Bottle is **CLAIMABLE** ⇢ **all four parts integrity ≥ 80 %** AND safety checks < 2 ❌
+# * Otherwise ⇢ **UNCLAIMABLE**
+
+# ────────────────────────────────────────
+# ## 5. OUTPUT TEMPLATE
+
+# ### THOUGHT
+# - Brand detected: …
+# - Cap integrity … % (✅/❌ ≥ 80 ?)
+# - Neck integrity … % (✅/❌)
+# - Body integrity … % (✅/❌)
+# - Bottom integrity … % (✅/❌)
+# - Safety checklist: ✅/❌ …
+# - Conclusion logic → …
+
+# ### ANSWER
+# Bottle Assessment  
+# ✅/❌ Cap – …comment… (… %)  
+# ✅/❌ Neck – …comment… (… %)  
+# ✅/❌ Body – …comment… (… %)  
+# ✅/❌ Bottom – …comment… (… %)  
+# ➡ Overall: ✅ CLAIM / ❌ UNCLAIM
+
+# ```json
+# {
+#   "english": "<copy of ANSWER>",
+#   "thai": "<คำแปลย่อเป็นภาษาไทย>"
+# }
+# ```
+# >>>>>>> utils/prompts.py
+# """
