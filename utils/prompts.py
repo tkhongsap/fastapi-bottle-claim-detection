@@ -73,7 +73,6 @@ UNCLAIM_CRITERIAS = """
 """
 
 
-<<<<<<< utils/prompts.py
 NEW_PROMPT = f"""
 You will receive an image or multiple images of one bottle or a video of a broken bottle.
 Your task is to classify claim or unclaim based on the provided images or video.
@@ -128,7 +127,7 @@ Then provide a JSON object with:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
 """
-=======
+
 
 
 # NEW_PROMPT = """
