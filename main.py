@@ -23,7 +23,9 @@ from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, Auth
 # Import OpenAI client utilities
 from utils.prompts import NEW_PROMPT
 from utils import openai_client
-from utils.media_analysis import analyze_media, extract_frames_and_analyze_video, analyze_frames
+# Updated imports for the refactored modules
+from utils.media_analysis import analyze_media
+from utils.video_processing import extract_frames_and_analyze_video, analyze_frames
 from utils.story_generation import (
     generate_story_from_image,
     generate_story_from_multiple_images, 
