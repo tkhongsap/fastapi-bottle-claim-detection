@@ -49,32 +49,29 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         contents = await file.read()
         base64_image = base64.b64encode(contents).decode('utf-8')
         
-        # Create message payload with the image and prompt
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": DATE_EXTRACTION_PROMPT},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:{file.content_type};base64,{base64_image}"
-                        }
-                    }
-                ]
-            }
-        ]
+        # Create input with the image and prompt for responses API
+        input_data = {
+            "type": "text_with_images",
+            "text": DATE_EXTRACTION_PROMPT,
+            "images": [
+                {
+                    "data": f"data:{file.content_type};base64,{base64_image}"
+                }
+            ]
+        }
         
-        # Call OpenAI API
+        # Call OpenAI API using responses endpoint
         logger.info(f"Sending request to OpenAI for date extraction from: {file.filename}")
-        response = client.chat.completions.create(
-            model="gpt-4-vision-preview",  # Using vision model for image analysis
-            messages=messages,
+        
+        # Using the responses API instead of chat completions
+        response = client.responses.create(
+            model=openai_client.get_active_model(),  # Use the active model from client
+            input=input_data,
             max_tokens=300,
         )
         
         # Extract the response text
-        response_text = response.choices[0].message.content.strip()
+        response_text = response.content[0].text.strip()
         logger.info(f"Date extraction response: {response_text}")
         
         # Check if a date was found
@@ -85,8 +82,8 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
                 "production_date": None,
                 "error": "No production date visible on the bottle label",
                 "token_usage": {
-                    "input_tokens": response.usage.prompt_tokens,
-                    "output_tokens": response.usage.completion_tokens,
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
                     "total_tokens": response.usage.total_tokens
                 }
             }
@@ -97,8 +94,8 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
             "production_date": response_text,
             "error": None,
             "token_usage": {
-                "input_tokens": response.usage.prompt_tokens,
-                "output_tokens": response.usage.completion_tokens,
+                "input_tokens": response.usage.input_tokens,
+                "output_tokens": response.usage.output_tokens,
                 "total_tokens": response.usage.total_tokens
             }
         }
