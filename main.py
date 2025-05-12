@@ -32,6 +32,9 @@ from utils.story_generation import (
     generate_story_from_video,
     parse_openai_response
 )
+# Import date verification modules
+from utils.date_extraction import extract_date_from_image
+from utils.date_verification import verify_production_date, format_verification_response
 
 # --- Configuration & Setup --- 
 
@@ -159,21 +162,115 @@ async def read_manual(request: Request):
         logger.exception(f"Error reading manual HTML file: {e}")
         raise HTTPException(status_code=500, detail="Internal server error: Could not load user manual.")
 
+@app.post("/verify-date/")
+async def verify_date_endpoint(
+    file: UploadFile = File(..., description="Image file of bottle label showing production date")
+):
+    """
+    Endpoint to verify if a Chang beer bottle is eligible for claims based on its production date.
+    
+    First extracts the production date from the bottle label image, then verifies if it's within
+    the 120-day eligibility window.
+    """
+    try:
+        # Validate file type (only accept images)
+        if not file.content_type or not file.content_type.startswith('image/'):
+            raise HTTPException(
+                status_code=415, 
+                detail="Unsupported file type. Please upload an image file (JPG, PNG)."
+            )
+        
+        # Extract production date from the image
+        extraction_result = await extract_date_from_image(file)
+        
+        # Check if extraction was successful
+        if extraction_result["status"] == "ERROR":
+            return JSONResponse(
+                content={
+                    "english": {
+                        "status": "ERROR",
+                        "message": extraction_result["error"]
+                    },
+                    "thai": {
+                        "status": "ข้อผิดพลาด",
+                        "message": f"เกิดข้อผิดพลาดในการดึงข้อมูลวันที่ผลิต: {extraction_result['error']}"
+                    },
+                    "token_usage": extraction_result["token_usage"]
+                }
+            )
+        
+        # Verify the production date
+        verification_result = verify_production_date(extraction_result["production_date"])
+        
+        # Format the response
+        response_data = format_verification_response(verification_result)
+        
+        # Add token usage information to the response
+        response_data["token_usage"] = extraction_result["token_usage"]
+        
+        return JSONResponse(content=response_data)
+    
+    except HTTPException as e:
+        # Re-raise HTTP exceptions
+        raise e
+    except OpenAIError as e:
+        # Handle OpenAI API errors
+        logger.error(f"OpenAI API error in date verification endpoint: {e}")
+        detail = f"OpenAI API Error: {e.message}" if hasattr(e, 'message') else str(e)
+        status_code = e.status_code if hasattr(e, 'status_code') else 503
+        raise HTTPException(status_code=status_code, detail=detail)
+    except Exception as e:
+        # Handle unexpected errors
+        logger.exception("An unexpected error occurred in the /verify-date endpoint.")
+        raise HTTPException(status_code=500, detail=f"An unexpected server error occurred: {str(e)}")
+    finally:
+        # Reset file position
+        await file.seek(0)
+
 @app.post("/analyze/")
 async def analyze_media_endpoint(
     files: List[UploadFile] = File(..., description="Media files (JPG, PNG images or MP4 video)"),
-    prompt: Optional[str] = Form(None) # Make prompt optional
+    prompt: Optional[str] = Form(None), # Make prompt optional
+    date_verification: Optional[Dict[str, Any]] = Form(None, description="Optional date verification result")
 ):
     """
     Endpoint to receive media files and an optional prompt for analysis.
     Supports JPG, PNG images (multiple allowed) or a single MP4 video.
     Maximum file size: 10MB per image, 50MB for video.
     
+    If date_verification is provided and shows the bottle is ineligible,
+    the damage assessment will be skipped.
+    
     Delegates the core logic to the analyze_media function.
     """
     try:
+        # Check if date verification was provided and bottle is ineligible
+        if date_verification and isinstance(date_verification, dict):
+            # Parse the date_verification if it was sent as a JSON string
+            if isinstance(date_verification, str):
+                try:
+                    date_verification = json.loads(date_verification)
+                except json.JSONDecodeError:
+                    logger.error("Invalid JSON in date_verification parameter")
+                    date_verification = None
+            
+            # Check eligibility status
+            status = (date_verification.get("english", {}) or {}).get("status")
+            if status == "INELIGIBLE":
+                # Return early with ineligibility message
+                return JSONResponse(content={
+                    "english": "This bottle is not eligible for claim assessment as it exceeds the 120-day production limit.",
+                    "thai": "ขวดนี้ไม่มีสิทธิ์ได้รับการประเมินการเคลมเนื่องจากเกินกำหนด 120 วันหลังจากวันผลิต",
+                    "date_verification": date_verification
+                })
+        
         # Pass empty string if prompt is None
         result = await analyze_media(files=files, prompt=NEW_PROMPT) 
+        
+        # If we have date verification, include it in the response
+        if date_verification:
+            result["date_verification"] = date_verification
+        
         return JSONResponse(content=result)
     except HTTPException as e:
         # Re-raise known HTTP exceptions from analyze_media

@@ -44,6 +44,12 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Add file size limits to prevent overly large uploads
     - [x] Provide clear error messages for invalid files
     - [x] Add frontend validation to prevent invalid uploads
+- [x] Implement Production Date Verification feature
+    - [x] Create date extraction module using OpenAI Vision
+    - [x] Create date verification module to check 120-day eligibility
+    - [x] Add /verify-date/ endpoint to API
+    - [x] Integrate date verification with bottle damage assessment flow
+    - [x] Add bilingual (English/Thai) responses for date verification
 
 ## In Progress Tasks
 - [ ] Test backend endpoints thoroughly
@@ -52,8 +58,13 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Test video upload analysis
     - [x] Test with various prompt variations
     - [x] Test error handling scenarios
+    - [ ] Test production date verification with sample bottle labels
 
 ## Upcoming Tasks
+- [ ] Update frontend to include production date verification step
+    - [ ] Add UI for date label upload
+    - [ ] Display date verification results to users
+    - [ ] Implement client-side validation for date images
 - [ ] Improve video processing capabilities
     - [ ] Add thumbnail generation for videos
     - [ ] Extract and analyze multiple frames for better video understanding
@@ -66,6 +77,7 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [ ] Create README.md with setup and usage instructions
     - [ ] Document API endpoints and parameters
     - [ ] Add example requests and responses
+    - [ ] Add documentation for production date verification feature
 - [ ] Deploy application (if applicable)
     - [ ] Prepare for production deployment
     - [ ] Configure environment for production
@@ -84,8 +96,10 @@ A track of tasks related to adding additional examples of bottle assessment to t
 
 ## In Progress Tasks
 - [ ] Review the updated manual for consistency and clarity
+- [ ] Add documentation for the production date verification process
 
 ## Upcoming Tasks
+- [ ] Create examples of production date verification in the user manual
 - [ ] Test the manual with actual users to ensure examples are clear and helpful
 - [ ] Consider adding more visual aids or diagrams to illustrate damage patterns
 - [ ] Explore possibility of adding animation or interactive elements to better explain the assessment criteria 
