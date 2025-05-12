@@ -62,27 +62,98 @@
 
     <main>
         <section id="upload-section" class="container">
+            <!-- Stepper navigation -->
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-cloud-upload-alt"></i> <span data-i18n="upload_media">อัปโหลดสื่อ</span></h2>
-                    <p data-i18n="upload_hint">อัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4) ของขวดเพื่อประเมินสิทธิ์การเคลม</p>
+                    <h2><i class="fas fa-list-check"></i> <span data-i18n="steps_title">กระบวนการประเมินการเคลม</span></h2>
                 </div>
                 <div class="card-body">
-                    <form id="upload-form">
-                        <div class="upload-area">
-                            <label for="media-files" class="file-input-label">
+                    <div class="stepper">
+                        <div class="stepper-step active" data-step="date">
+                            <div class="stepper-circle">1</div>
+                            <div class="stepper-label" data-i18n="stepper_date">1. วันที่ผลิต</div>
+                        </div>
+                        <div class="stepper-step" data-step="damage">
+                            <div class="stepper-circle">2</div>
+                            <div class="stepper-label" data-i18n="stepper_damage">2. ภาพความเสียหาย</div>
+                        </div>
+                        <div class="stepper-step" data-step="results">
+                            <div class="stepper-circle">3</div>
+                            <div class="stepper-label" data-i18n="stepper_results">3. ผลลัพธ์</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date verification card -->
+            <div id="date-step" class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-calendar-check"></i> <span data-i18n="upload_date_label">ตรวจสอบวันที่ผลิต</span></h2>
+                    <p data-i18n="label_upload_hint">อัปโหลดภาพถ่ายระยะใกล้ 1-3 ภาพของฉลากขวดที่แสดงวันที่ผลิต</p>
+                </div>
+                <div class="card-body">
+                    <form id="date-form">
+                        <div class="label-upload-area">
+                            <div class="help-link-container">
+                                <button type="button" class="help-modal-button" id="date-help-button">
+                                    <i class="fas fa-question"></i>
+                                </button>
+                            </div>
+                            <label for="label-files" class="file-input-label">
                                 <div class="file-input-placeholder">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <p data-i18n="drag_drop">ลากและวางไฟล์ที่นี่</p>
                                     <span data-i18n="choose_files">เลือกไฟล์</span>
                                 </div>
-                                <div id="preview-content" class="preview-content"></div>
+                                <div id="label-preview-content" class="preview-content"></div>
                             </label>
-                            <input type="file" id="media-files" name="files" accept="image/jpeg, image/png, video/mp4" multiple>
+                            <input type="file" id="label-files" name="file" accept="image/jpeg, image/png" multiple>
+                            <p class="file-note"><i class="fas fa-info-circle"></i> <span data-i18n="label_file_limits">รูปภาพสูงสุด 5 MB ต่อรูป สูงสุด 3 รูป</span></p>
+                        </div>
+                        <button type="submit" class="submit-button"><i class="fas fa-check-circle"></i> <span data-i18n="submit_btn">ตรวจสอบวันที่ผลิต</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Date verification result -->
+            <div id="date-verification-result" class="card" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-calendar-check"></i> <span data-i18n="date_result_title">การตรวจสอบวันที่ผลิต</span></h2>
+                </div>
+                <div class="card-body">
+                    <div id="date-verification-banner" class="date-verification-banner">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="date-verification-message"></span>
+                    </div>
+                    <div class="date-actions">
+                        <button id="proceed-to-damage" class="submit-button"><i class="fas fa-arrow-right"></i> <span data-i18n="proceed_to_damage">ดำเนินการต่อไปยังการประเมินความเสียหาย</span></button>
+                        <button id="retry-date" class="retry-button"><i class="fas fa-redo"></i> <span data-i18n="retry_date">ลองภาพอื่น</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Damage upload card -->
+            <div id="damage-step" class="card" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-cloud-upload-alt"></i> <span data-i18n="upload_damage_label">อัปโหลดสื่อความเสียหาย</span></h2>
+                    <p data-i18n="upload_hint">อัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4) ของขวดเพื่อประเมินสิทธิ์การเคลม</p>
+                </div>
+                <div class="card-body">
+                    <form id="damage-form">
+                        <div class="upload-area">
+                            <label for="damage-files" class="file-input-label">
+                                <div class="file-input-placeholder">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p data-i18n="drag_drop">ลากและวางไฟล์ที่นี่</p>
+                                    <span data-i18n="choose_files">เลือกไฟล์</span>
+                                </div>
+                                <div id="damage-preview-content" class="preview-content"></div>
+                            </label>
+                            <input type="file" id="damage-files" name="files" accept="image/jpeg, image/png, video/mp4" multiple>
                             <p class="file-note"><i class="fas fa-info-circle"></i> <span data-i18n="file_note">เลือกรูปหลายรูปหรือวิดีโอหนึ่งไฟล์ของขวด</span></p>
                             <p class="file-limits"><i class="fas fa-exclamation-circle"></i> <span data-i18n="file_limits">รูปภาพสูงสุด 10 MB, วิดีโอสูงสุด 50 MB</span></p>
                         </div>
-                        <div id="preview-container" class="preview-container">
+                        <div id="damage-preview-container" class="preview-container">
                             <h3><i class="fas fa-eye"></i> <span data-i18n="media_preview">ตัวอย่างสื่อ</span></h3>
                             <div></div>
                         </div>
@@ -101,6 +172,7 @@
                     <h2><i class="fas fa-clipboard-check"></i> <span data-i18n="results_title">ผลการประเมิน</span></h2>
                 </div>
                 <div class="card-body">
+                    <div id="results-date-banner"></div>
                     <div class="caption-container">
                         <div id="english-caption" class="caption-box">
                             <h3><i class="fas fa-language"></i> <span data-i18n="english">ภาษาอังกฤษ</span></h3>
@@ -152,6 +224,21 @@
             </div>
         </section>
     </main>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="help-modal">
+        <div class="help-modal-content">
+            <button class="help-modal-close"><i class="fas fa-times"></i></button>
+            <h3 data-i18n="date_help_title">วิธีหาวันที่ผลิต</h3>
+            <div class="help-modal-body">
+                <p data-i18n="date_help_content">ถ่ายภาพฉลากบนขวดช้างให้ชัดเจน วันที่ผลิตมักพิมพ์อยู่บนฉลากหรือบริเวณก้นขวด</p>
+                <!-- Placeholder for a sample image that could be added later -->
+                <div class="help-image-placeholder" style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #aaa;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <div class="container">

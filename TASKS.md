@@ -50,6 +50,14 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Add /verify-date/ endpoint to API
     - [x] Integrate date verification with bottle damage assessment flow
     - [x] Add bilingual (English/Thai) responses for date verification
+- [x] Update frontend to include production date verification step
+    - [x] Add UI for date label upload
+    - [x] Display date verification results to users
+    - [x] Implement client-side validation for date images
+    - [x] Create step-by-step wizard UI with stepper component
+    - [x] Add help modal for date verification instructions
+    - [x] Create date verification banner for displaying eligibility status
+    - [x] Persist date verification data to damage assessment step
 
 ## In Progress Tasks
 - [ ] Test backend endpoints thoroughly
@@ -59,12 +67,9 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Test with various prompt variations
     - [x] Test error handling scenarios
     - [ ] Test production date verification with sample bottle labels
+    - [ ] Test dual-stage UI workflow end-to-end
 
 ## Upcoming Tasks
-- [ ] Update frontend to include production date verification step
-    - [ ] Add UI for date label upload
-    - [ ] Display date verification results to users
-    - [ ] Implement client-side validation for date images
 - [ ] Improve video processing capabilities
     - [ ] Add thumbnail generation for videos
     - [ ] Extract and analyze multiple frames for better video understanding
@@ -93,6 +98,9 @@ A track of tasks related to adding additional examples of bottle assessment to t
 - [x] Added a more nuanced unclaimable example showing partial damage patterns
 - [x] Added example of partially damaged but unclaimable bottle to manual.html
 - [x] Updated translations in both Thai and English locale files
+- [x] Implemented dual-stage UI with production date verification as first step
+- [x] Added stepper navigation to guide users through the claim assessment process
+- [x] Created help modal for production date verification
 
 ## In Progress Tasks
 - [ ] Review the updated manual for consistency and clarity
@@ -101,5 +109,5 @@ A track of tasks related to adding additional examples of bottle assessment to t
 ## Upcoming Tasks
 - [ ] Create examples of production date verification in the user manual
 - [ ] Test the manual with actual users to ensure examples are clear and helpful
-- [ ] Consider adding more visual aids or diagrams to illustrate damage patterns
+- [ ] Add more visual aids or diagrams to illustrate damage patterns
 - [ ] Explore possibility of adding animation or interactive elements to better explain the assessment criteria 
