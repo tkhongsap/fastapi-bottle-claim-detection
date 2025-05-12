@@ -1,10 +1,10 @@
-# FastAPI ImgStory
+# FastAPI Bottle Claim Detection
 
-A specialized media analysis application for bottle damage assessment that uses OpenAI's vision models to evaluate claim eligibility.
+A specialized media analysis application for **bottle claim detection** and damage assessment, using OpenAI's vision models to evaluate claim eligibility for Chang beer bottles and similar use cases.
 
 ## Project Overview
 
-FastAPI ImgStory is a web application built to analyze Chang beer bottles and determine if they qualify for claims based on their condition. The application processes uploaded images or videos and generates detailed assessment reports that evaluate the bottle's structural integrity across multiple components (cap, neck, body, bottom). Assessment results are provided in both English and Thai languages.
+FastAPI Bottle Claim Detection is a web application built to analyze Chang beer bottles and determine if they qualify for claims based on their condition. The application processes uploaded images or videos and generates detailed assessment reports that evaluate the bottle's structural integrity across multiple components (cap, neck, body, bottom). Assessment results are provided in both English and Thai languages.
 
 ## Features
 
