@@ -1,21 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Main form elements
-    const dateForm = document.getElementById('date-form');
-    const damageForm = document.getElementById('damage-form');
-    const dateStep = document.getElementById('date-step');
-    const damageStep = document.getElementById('damage-step');
-    const dateVerificationResult = document.getElementById('date-verification-result');
-    const proceedToDamageBtn = document.getElementById('proceed-to-damage');
-    const retryDateBtn = document.getElementById('retry-date');
-    
-    // File inputs
+    // Main elements
     const labelFileInput = document.getElementById('label-files');
     const damageFileInput = document.getElementById('damage-files');
+    const analyzeBothBtn = document.getElementById('analyze-both-btn');
+    const resultsAccordion = document.getElementById('results-accordion');
+    const accordionToggle = document.querySelector('.accordion-toggle');
+    const accordionHeader = document.querySelector('.accordion-header');
+    
+    // Badge elements
+    const dateBadge = document.getElementById('date-badge');
+    const claimBadge = document.getElementById('claim-badge');
+    
+    // Result sections
+    const dateResultSection = document.getElementById('date-result-section');
+    const damageResultSection = document.getElementById('damage-result-section');
+    
+    // Date verification elements
+    const dateVerificationBanner = document.getElementById('date-verification-banner');
+    const dateVerificationMessage = document.getElementById('date-verification-message');
     
     // Loading and results divs
     const loadingIndicator = document.getElementById('loading');
-    const resultsDiv = document.getElementById('results');
-    const resultsBanner = document.getElementById('results-date-banner');
     
     // Results content
     const englishCaptionP = document.querySelector('#english-caption p');
@@ -41,24 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Stepper elements
     const stepperSteps = document.querySelectorAll('.stepper-step');
-    
+
     // Cost constants for gpt-4.1-mini (per 1M tokens)
     const INPUT_COST_USD_PER_MILLION = 0.40;
     const OUTPUT_COST_USD_PER_MILLION = 1.60;
     const USD_TO_THB_RATE = 35.0;
     
-    // Flag to track current step
-    let currentStep = 'date';
-    // Variable to store date verification result
-    let dateVerificationData = null;
-    
     // Files containers to keep track of selected files
     let selectedLabelFiles = new DataTransfer();
     let selectedDamageFiles = new DataTransfer();
     
+    // Date verification result
+    let dateVerificationData = null;
+    
     // Helper function to update the active step in the stepper UI
     function updateStepperUI(step) {
-        currentStep = step;
         stepperSteps.forEach(stepEl => {
             const stepName = stepEl.getAttribute('data-step');
             stepEl.classList.remove('active', 'completed');
@@ -66,52 +68,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stepName === step) {
                 stepEl.classList.add('active');
             } else if (
-                (step === 'damage' && stepName === 'date') ||
-                (step === 'results' && (stepName === 'date' || stepName === 'damage'))
+                (step === 'results' && stepName === 'upload')
             ) {
                 stepEl.classList.add('completed');
             }
         });
     }
     
-    // Show the appropriate step based on navigation
-    function showStep(step) {
-        // Hide all steps
-        dateStep.style.display = 'none';
-        damageStep.style.display = 'none';
-        dateVerificationResult.style.display = 'none';
-        resultsDiv.style.display = 'none';
-        
-        // Show the requested step
-        if (step === 'date') {
-            dateStep.style.display = 'block';
-        } else if (step === 'date-result') {
-            dateVerificationResult.style.display = 'block';
-        } else if (step === 'damage') {
-            damageStep.style.display = 'block';
-        } else if (step === 'results') {
-            resultsDiv.style.display = 'block';
-        }
-        
-        // Update stepper UI (except for date-result which keeps the date step active)
-        if (step !== 'date-result') {
-            updateStepperUI(step);
-        }
-    }
-    
     // Initialize event listeners for navigation and modals
     function initUIInteractions() {
-        // Date verification to damage step navigation
-        proceedToDamageBtn.addEventListener('click', function() {
-            showStep('damage');
+        // Accordion toggle
+        accordionHeader.addEventListener('click', function(e) {
+            if (!e.target.closest('.badge')) {
+                resultsAccordion.classList.toggle('open');
+            }
         });
         
-        // Retry date button
-        retryDateBtn.addEventListener('click', function() {
-            showStep('date');
-            // Clear the date verification result
-            dateVerificationData = null;
-        });
+        // Analyze both button
+        analyzeBothBtn.addEventListener('click', analyzeFiles);
         
         // Help modal
         helpModalButton.addEventListener('click', function() {
@@ -128,6 +102,212 @@ document.addEventListener('DOMContentLoaded', function() {
                 helpModal.classList.remove('active');
             }
         });
+        
+        // Set up file input listeners
+        labelFileInput.addEventListener('change', function() {
+            const files = this.files;
+            if (validateFiles(files, true)) {
+                updateSelectedFiles(files, true);
+                updateFileInputUI(true);
+                generatePreviews(true);
+                checkEnableAnalyzeButton();
+            }
+        });
+        
+        damageFileInput.addEventListener('change', function() {
+            const files = this.files;
+            if (validateFiles(files, false)) {
+                updateSelectedFiles(files, false);
+                updateFileInputUI(false);
+                generatePreviews(false);
+                checkEnableAnalyzeButton();
+            }
+        });
+        
+        // Error retry button
+        retryButton.addEventListener('click', function() {
+            errorDiv.style.display = 'none';
+        });
+    }
+    
+    // Check if analyze button should be enabled
+    function checkEnableAnalyzeButton() {
+        analyzeBothBtn.disabled = !(selectedLabelFiles.files.length > 0 && selectedDamageFiles.files.length > 0);
+    }
+    
+    // Main analysis function
+    async function analyzeFiles() {
+        // Reset previous results
+        resetResults();
+        
+        // Show loading indicator
+        loadingIndicator.style.display = 'block';
+        loadingIndicator.querySelector('p').textContent = i18next.t('date_verification_loading');
+        
+        try {
+            // Step 1: Verify date
+            const dateVerificationResult = await verifyDate();
+            
+            // Update UI with date verification result
+            updateDateVerificationUI(dateVerificationResult);
+            
+            // If date is eligible, proceed to damage assessment
+            if (dateVerificationResult.english.status === 'ELIGIBLE') {
+                // Update loading message
+                loadingIndicator.querySelector('p').textContent = i18next.t('loading');
+                
+                // Step 2: Analyze damage
+                const damageResult = await analyzeDamage(dateVerificationResult);
+                
+                // Update UI with damage assessment result
+                updateDamageResultUI(damageResult);
+            }
+            
+            // Hide loading indicator, update stepper, and show results
+            loadingIndicator.style.display = 'none';
+            updateStepperUI('results');
+            resultsAccordion.classList.add('open');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            loadingIndicator.style.display = 'none';
+            showError(error.message || 'An error occurred during analysis.');
+        }
+    }
+    
+    // Reset all result data
+    function resetResults() {
+        // Hide all result sections
+        dateResultSection.classList.add('hidden');
+        damageResultSection.classList.add('hidden');
+        
+        // Reset badges
+        dateBadge.classList.add('hidden');
+        claimBadge.classList.add('hidden');
+        
+        // Clear text content
+        englishCaptionP.textContent = '...';
+        thaiCaptionP.textContent = '...';
+        inputTokensSpan.textContent = '0';
+        outputTokensSpan.textContent = '0';
+        costUsdSpan.textContent = '$0.00';
+        costThbSpan.textContent = '฿0.00';
+    }
+    
+    // Verify date API call
+    async function verifyDate() {
+        const formData = new FormData();
+        formData.append('file', labelFileInput.files[0]); // Send only the first image for date verification
+        
+        const response = await fetch('/verify-date/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.english?.message || 'An error occurred during date verification.');
+        }
+        
+        return await response.json();
+    }
+    
+    // Analyze damage API call
+    async function analyzeDamage(dateVerificationResult) {
+        const formData = new FormData();
+        
+        // Append each damage file
+        for (let i = 0; i < damageFileInput.files.length; i++) {
+            formData.append('files', damageFileInput.files[i]);
+        }
+        
+        // Append date verification data
+        formData.append('date_verification', JSON.stringify(dateVerificationResult));
+        
+        const response = await fetch('/claimability/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'An error occurred during damage assessment.');
+        }
+        
+        return await response.json();
+    }
+    
+    // Update date verification UI
+    function updateDateVerificationUI(result) {
+        // Show date result section
+        dateResultSection.classList.remove('hidden');
+        
+        // Update date badge
+        dateBadge.classList.remove('hidden');
+        dateBadge.className = 'badge'; // Reset class
+        
+        const status = result.english.status;
+        
+        if (status === 'ELIGIBLE') {
+            dateBadge.classList.add('green');
+            dateBadge.querySelector('span').textContent = i18next.t('eligible');
+            dateVerificationBanner.classList.add('eligible');
+            dateVerificationBanner.classList.remove('ineligible');
+            dateVerificationBanner.querySelector('i').className = 'fas fa-check-circle';
+        } else {
+            dateBadge.classList.add('red');
+            dateBadge.querySelector('span').textContent = i18next.t('ineligible');
+            dateVerificationBanner.classList.add('ineligible');
+            dateVerificationBanner.classList.remove('eligible');
+            dateVerificationBanner.querySelector('i').className = 'fas fa-times-circle';
+        }
+        
+        // Format the message with the days value
+        const translationKey = status === 'ELIGIBLE' ? 'date_banner_eligible' : 'date_banner_ineligible';
+        const message = i18next.t(translationKey, { days: result.english.days_elapsed });
+        dateVerificationMessage.textContent = message;
+    }
+    
+    // Update damage result UI
+    function updateDamageResultUI(result) {
+        // Show damage result section
+        damageResultSection.classList.remove('hidden');
+        
+        // Update claim badge
+        claimBadge.classList.remove('hidden');
+        claimBadge.className = 'badge'; // Reset class
+        
+        // Determine if claimable (this is an assumption, adjust based on your actual API response)
+        const isClaimable = result.claimable === true;
+        
+        if (isClaimable) {
+            claimBadge.classList.add('green');
+            claimBadge.querySelector('span').textContent = i18next.t('claim');
+        } else {
+            claimBadge.classList.add('red');
+            claimBadge.querySelector('span').textContent = i18next.t('unclaim');
+        }
+        
+        // Update text content
+        if (result.english && result.thai) {
+            englishCaptionP.textContent = result.english;
+            thaiCaptionP.textContent = result.thai;
+        }
+        
+        // Update token usage if available
+        if (result.token_usage) {
+            inputTokensSpan.textContent = result.token_usage.input_tokens.toLocaleString();
+            outputTokensSpan.textContent = result.token_usage.output_tokens.toLocaleString();
+            
+            // Calculate costs
+            const inputCost = (result.token_usage.input_tokens / 1000000) * INPUT_COST_USD_PER_MILLION;
+            const outputCost = (result.token_usage.output_tokens / 1000000) * OUTPUT_COST_USD_PER_MILLION;
+            const totalCostUSD = inputCost + outputCost;
+            const totalCostTHB = totalCostUSD * USD_TO_THB_RATE;
+            
+            costUsdSpan.textContent = `$${totalCostUSD.toFixed(4)}`;
+            costThbSpan.textContent = `฿${totalCostTHB.toFixed(2)}`;
+        }
     }
     
     // Drag and drop functionality for both upload areas
@@ -162,80 +342,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateSelectedFiles(droppedFiles, area.input === labelFileInput);
                     updateFileInputUI(area.input === labelFileInput);
                     generatePreviews(area.input === labelFileInput);
+                    checkEnableAnalyzeButton();
                 }
             }, false);
         });
     }
-    
-    // Date verification form submission
-    dateForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        if (labelFileInput.files.length === 0) {
-            showError('Please select at least one image of the bottle label.');
-            return;
-        }
-        
-        // Show loading indicator with date verification message
-        loadingIndicator.querySelector('p').textContent = i18next.t('date_verification_loading');
-        loadingIndicator.style.display = 'block';
-        dateStep.style.display = 'none';
-        
-        const formData = new FormData();
-        formData.append('file', labelFileInput.files[0]); // Send only the first image for now
-        
-        try {
-            const response = await fetch('/verify-date/', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.english?.message || 'An error occurred during date verification.');
-            }
-            
-            const data = await response.json();
-            
-            // Hide loading indicator
-            loadingIndicator.style.display = 'none';
-            
-            // Store the verification result for later use
-            dateVerificationData = data;
-            
-            // Update the verification banner
-            const banner = document.getElementById('date-verification-banner');
-            const message = document.getElementById('date-verification-message');
-            const status = data.english.status;
-            
-            if (status === 'ELIGIBLE') {
-                banner.classList.add('eligible');
-                banner.classList.remove('ineligible');
-                banner.querySelector('i').className = 'fas fa-check-circle';
-                
-                // Format the message with the days value
-                const translatedMsg = i18next.t('date_banner_eligible', { days: data.english.days_elapsed });
-                message.textContent = translatedMsg;
-                
-            } else {
-                banner.classList.add('ineligible');
-                banner.classList.remove('eligible');
-                banner.querySelector('i').className = 'fas fa-times-circle';
-                
-                // Format the message with the days value
-                const translatedMsg = i18next.t('date_banner_ineligible', { days: data.english.days_elapsed });
-                message.textContent = translatedMsg;
-            }
-            
-            // Show the date verification result
-            showStep('date-result');
-            
-        } catch (error) {
-            console.error('Error:', error);
-            loadingIndicator.style.display = 'none';
-            showError(error.message || 'An error occurred during date verification.');
-        }
-    });
     
     // Function to validate file uploads
     function validateFiles(files, isLabelUpload) {
@@ -273,9 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } else {
-            // Damage media validation: 
-            // The original validation code applies here - using the existing logic
-            // from the original script.js file
+            // Damage media validation
             const maxImageSize = 10 * 1024 * 1024; // 10MB
             const maxVideoSize = 50 * 1024 * 1024; // 50MB
             const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -426,35 +535,12 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.style.display = 'block';
     }
     
-    // Initialize the app
-    initUIInteractions();
-    setupDragAndDrop();
-    
-    // Add event listeners for file inputs
-    labelFileInput.addEventListener('change', function() {
-        const files = this.files;
-        if (validateFiles(files, true)) {
-            updateSelectedFiles(files, true);
-            updateFileInputUI(true);
-            generatePreviews(true);
-        }
-    });
-    
-    damageFileInput.addEventListener('change', function() {
-        const files = this.files;
-        if (validateFiles(files, false)) {
-            updateSelectedFiles(files, false);
-            updateFileInputUI(false);
-            generatePreviews(false);
-        }
-    });
-
     // Function to prevent defaults on events
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
-
+    
     // Function to generate previews
     function generatePreviews(isLabelUpload) {
         const files = isLabelUpload ? labelFileInput.files : damageFileInput.files;
@@ -528,14 +614,14 @@ document.addEventListener('DOMContentLoaded', function() {
             previewContainer.appendChild(previewItem);
         });
     }
-
+    
     // Helper function to format file size
     function formatFileSize(bytes) {
         if (bytes < 1024) return bytes + ' bytes';
         else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
         else return (bytes / 1048576).toFixed(1) + ' MB';
     }
-
+    
     // Function to remove a file
     function removeFile(fileName, isLabelUpload) {
         const filesList = isLabelUpload ? selectedLabelFiles : selectedDamageFiles;
@@ -603,107 +689,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!isLabelUpload && newFiles.files.length === 0) {
                     previewContent.classList.remove('single-video');
                 }
+                
+                // Check if the analyze button should be enabled/disabled
+                checkEnableAnalyzeButton();
             }, 300); // Match this to the CSS animation duration
         }
     }
-
-    // Damage form submission
-    damageForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        if (damageFileInput.files.length === 0) {
-            showError('Please select at least one image or video of the bottle damage.');
-            return;
-        }
-        
-        // Show loading indicator with damage assessment message
-        loadingIndicator.querySelector('p').textContent = i18next.t('loading');
-        loadingIndicator.style.display = 'block';
-        damageStep.style.display = 'none';
-        
-        const formData = new FormData();
-        
-        // Append each file to the form data
-        for (let i = 0; i < damageFileInput.files.length; i++) {
-            formData.append('files', damageFileInput.files[i]);
-        }
-        
-        // Append date verification data if available
-        if (dateVerificationData) {
-            formData.append('date_verification', JSON.stringify(dateVerificationData));
-        }
-        
-        try {
-            const response = await fetch('/analyze/', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'An error occurred during damage assessment.');
-            }
-            
-            const data = await response.json();
-            
-            // Hide loading and show results
-            loadingIndicator.style.display = 'none';
-            showStep('results');
-            
-            // Display results
-            if (data.english && data.thai) {
-                englishCaptionP.textContent = data.english;
-                thaiCaptionP.textContent = data.thai;
-            }
-            
-            // Display token usage if available
-            if (data.token_usage) {
-                inputTokensSpan.textContent = data.token_usage.input_tokens.toLocaleString();
-                outputTokensSpan.textContent = data.token_usage.output_tokens.toLocaleString();
-                
-                // Calculate costs
-                const inputCost = (data.token_usage.input_tokens / 1000000) * INPUT_COST_USD_PER_MILLION;
-                const outputCost = (data.token_usage.output_tokens / 1000000) * OUTPUT_COST_USD_PER_MILLION;
-                const totalCostUSD = inputCost + outputCost;
-                const totalCostTHB = totalCostUSD * USD_TO_THB_RATE;
-                
-                costUsdSpan.textContent = `$${totalCostUSD.toFixed(4)}`;
-                costThbSpan.textContent = `฿${totalCostTHB.toFixed(2)}`;
-            }
-            
-            // Add date verification banner to results if available
-            if (dateVerificationData) {
-                const dateStatus = dateVerificationData.english.status;
-                const daysElapsed = dateVerificationData.english.days_elapsed;
-                
-                const banner = document.createElement('div');
-                banner.className = `date-verification-banner ${dateStatus.toLowerCase()}`;
-                
-                const icon = document.createElement('i');
-                icon.className = dateStatus === 'ELIGIBLE' ? 'fas fa-check-circle' : 'fas fa-times-circle';
-                banner.appendChild(icon);
-                
-                const message = document.createElement('span');
-                const translationKey = dateStatus === 'ELIGIBLE' ? 'date_banner_eligible' : 'date_banner_ineligible';
-                message.textContent = i18next.t(translationKey, { days: daysElapsed });
-                banner.appendChild(message);
-                
-                resultsBanner.innerHTML = '';
-                resultsBanner.appendChild(banner);
-            }
-            
-        } catch (error) {
-            console.error('Error:', error);
-            loadingIndicator.style.display = 'none';
-            showError(error.message || 'An error occurred during damage assessment.');
-        }
-    });
-
-    // Error retry button
-    retryButton.addEventListener('click', function() {
-        errorDiv.style.display = 'none';
-        
-        // Return to the current step
-        showStep(currentStep);
-    });
+    
+    // Initialize the app
+    initUIInteractions();
+    setupDragAndDrop();
 }); 

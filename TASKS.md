@@ -58,6 +58,13 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Add help modal for date verification instructions
     - [x] Create date verification banner for displaying eligibility status
     - [x] Persist date verification data to damage assessment step
+- [x] Implement frontend redesign with side-by-side layout
+    - [x] Create side-by-side upload grid layout for label and damage media
+    - [x] Update stepper to simplified two-step process
+    - [x] Implement single "Analyse Both" button for sequential processing
+    - [x] Create collapsible accordion for results display
+    - [x] Add status badges for date eligibility and claim status
+    - [x] Update translation keys and localization files
 
 ## In Progress Tasks
 - [ ] Test backend endpoints thoroughly
@@ -68,6 +75,7 @@ Based on the PRD (Product Requirements Document) for the PoC.
     - [x] Test error handling scenarios
     - [ ] Test production date verification with sample bottle labels
     - [ ] Test dual-stage UI workflow end-to-end
+    - [ ] Test side-by-side layout with various device sizes
 
 ## Upcoming Tasks
 - [ ] Improve video processing capabilities
@@ -101,10 +109,14 @@ A track of tasks related to adding additional examples of bottle assessment to t
 - [x] Implemented dual-stage UI with production date verification as first step
 - [x] Added stepper navigation to guide users through the claim assessment process
 - [x] Created help modal for production date verification
+- [x] Redesigned UI with side-by-side layout for improved user experience
+- [x] Created accordion component for results display
+- [x] Updated workflow to use single "Analyse Both" button for sequential processing
 
 ## In Progress Tasks
 - [ ] Review the updated manual for consistency and clarity
 - [ ] Add documentation for the production date verification process
+- [ ] Test the new side-by-side UI on various devices
 
 ## Upcoming Tasks
 - [ ] Create examples of production date verification in the user manual
