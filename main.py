@@ -228,11 +228,11 @@ async def verify_date_endpoint(
         # Reset file position
         await file.seek(0)
 
-@app.post("/analyze/")
+@app.post("/claimability/")
 async def analyze_media_endpoint(
     files: List[UploadFile] = File(..., description="Media files (JPG, PNG images or MP4 video)"),
     prompt: Optional[str] = Form(None), # Make prompt optional
-    date_verification: Optional[Dict[str, Any]] = Form(None, description="Optional date verification result")
+    date_verification = Form(None, description="Optional date verification result")
 ):
     """
     Endpoint to receive media files and an optional prompt for analysis.

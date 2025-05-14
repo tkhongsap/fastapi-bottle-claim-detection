@@ -34,14 +34,14 @@ def verify_production_date(production_date: str) -> Dict[str, Any]:
     """
     try:
         # Parse the production date
-        prod_date = datetime.strptime(production_date, "%Y-%m-%d")
+        prod_date = datetime.strptime(production_date, "%d/%m/%Y")
         
         # Get current date (use UTC to avoid timezone issues)
         current_date = datetime.utcnow()
         
         # Calculate days elapsed
         days_elapsed = (current_date - prod_date).days
-        
+
         # Determine eligibility
         is_eligible = days_elapsed <= MAX_ELIGIBLE_DAYS
         

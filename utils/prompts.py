@@ -74,9 +74,8 @@ UNCLAIM_CRITERIAS = """
 
 
 NEW_PROMPT = f"""
-You will receive an image or multiple images of one bottle or a video of a broken bottle and label of manufactured date.
+You will receive an image or multiple images of one bottle or a video of a broken bottle.
 Your task is to classify claim or unclaim based on the provided images or video.
-Extract manufactured date from label to json key "date" in the output.
 The answer must clearly specify whether the bottle can claim or unclaim,
 
 # Steps
@@ -106,11 +105,6 @@ The answer must clearly specify whether the bottle can claim or unclaim,
    - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
    - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
-6. **Extract date from label:**
-    - Extract the date from first line in the label
-      - Example FILL1204253J, first 6 digits are the date with format DD/MM/YY.
-    - Return it in the output key "date" with format DD/MM/YYYY.
-    - If the date is not found, return "Date not found".
 
 # Notes
 - Always prioritize accuracy and clarity in your responses.
@@ -118,7 +112,9 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Only if all conditions are met can be consider as claim.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
+- Provide True or False for claimable key.
 - Use the following format for the output:
+
 
 # Output Format
 For each assessment, use the following format:
@@ -133,31 +129,26 @@ For each assessment, use the following format:
 Then provide a JSON object with these keys:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
+- claimable: true/false
 """
 
 # Date extraction prompt template used for date verification
 DATE_EXTRACTION_PROMPT = """
 You are an AI tasked with identifying and extracting the production date from a Chang beer bottle label.
 
-IMPORTANT: Focus ONLY on the production/manufacturing date on the label, not the expiration date or any other dates.
+IMPORTANT: Focus on first line in the label, first 6 digits which after the word "FILL" are the date with format DD/MM/YY. The last 2 characters are not relevant for the date extraction
 
 Follow these steps:
 1. Carefully examine the image for the production date on the Chang beer bottle label
-2. The date will likely be printed on the label or etched on the bottle (often near the bottom)
-3. Look for date formats like:
-   - DD/MM/YYYY
-   - YYYY-MM-DD
-   - DD.MM.YY
-   - Production date: [DATE]
-   - MFG: [DATE]
-   - Batch/Lot codes followed by dates
+2. Look for date (first 6 digits) which after the word "FILL" with format DD/MM/YY:
+    - Example: FILL0101253J is 2025/01/01.
+    - Example: FILL2004253J is 2025/04/20.
+    - Example: FILL0312233J is 2023/12/03.
+3. If you find a date that appears on the first line in the label, standardize it to DD/MM/YYYY format
+4. If the date is partially visible or unclear, note this in your response
+5. If no date is visible at all, respond with "No production date visible"
 
-4. If you find a date that appears to be the production date, standardize it to YYYY-MM-DD format
-5. If multiple dates are present, identify which is the production date (not expiration)
-6. If the date is partially visible or unclear, note this in your response
-7. If no date is visible at all, respond with "No production date visible"
-
-Respond ONLY with the production date in YYYY-MM-DD format, or "No production date visible" if you cannot identify a date.
+Respond ONLY with the production date in DD/MM/YYYY string format, or "No production date visible" if you cannot identify a date.
 Do not include any explanations, analysis, or other text in your response.
 """
 

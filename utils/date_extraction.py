@@ -7,13 +7,14 @@ using OpenAI's vision model.
 
 import logging
 import base64
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import UploadFile, HTTPException
 from openai import OpenAIError, APIStatusError
 
 # Import from our utilities
 from utils import openai_client
 from utils.prompts import DATE_EXTRACTION_PROMPT
+from utils.media_validation import validate_files
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
             "error": "OpenAI client is not available",
             "token_usage": {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
         }
-    
+
     try:
         # Reset file position and read content
         await file.seek(0)
@@ -50,28 +51,36 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         base64_image = base64.b64encode(contents).decode('utf-8')
         
         # Create input with the image and prompt for responses API
-        input_data = {
-            "type": "text_with_images",
-            "text": DATE_EXTRACTION_PROMPT,
-            "images": [
-                {
-                    "data": f"data:{file.content_type};base64,{base64_image}"
-                }
-            ]
-        }
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": DATE_EXTRACTION_PROMPT
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{file.content_type};base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ]
         
         # Call OpenAI API using responses endpoint
         logger.info(f"Sending request to OpenAI for date extraction from: {file.filename}")
         
         # Using the responses API instead of chat completions
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model=openai_client.get_active_model(),  # Use the active model from client
-            input=input_data,
+            messages=messages,
             max_tokens=300,
         )
         
         # Extract the response text
-        response_text = response.content[0].text.strip()
+        response_text = response.choices[0].message.content.strip()
         logger.info(f"Date extraction response: {response_text}")
         
         # Check if a date was found
@@ -82,8 +91,8 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
                 "production_date": None,
                 "error": "No production date visible on the bottle label",
                 "token_usage": {
-                    "input_tokens": response.usage.input_tokens,
-                    "output_tokens": response.usage.output_tokens,
+                    "input_tokens": response.usage.prompt_tokens,
+                    "output_tokens": response.usage.completion_tokens,
                     "total_tokens": response.usage.total_tokens
                 }
             }
@@ -94,8 +103,8 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
             "production_date": response_text,
             "error": None,
             "token_usage": {
-                "input_tokens": response.usage.input_tokens,
-                "output_tokens": response.usage.output_tokens,
+                "input_tokens": response.usage.prompt_tokens,
+                "output_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens
             }
         }

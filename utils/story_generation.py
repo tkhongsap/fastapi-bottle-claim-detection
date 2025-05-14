@@ -59,8 +59,13 @@ def parse_openai_response(content: Optional[str]) -> Dict[str, str]:
         # Ensure english is string, thai is string or None
         english = str(parsed_data.get('english', ''))
         thai = str(parsed_data.get('thai', '')) if parsed_data.get('thai') is not None else None
+        claimable = parsed_data.get('claimable', False)
         
-        return {"english": english, "thai": thai or ""} # Return empty string if thai is None/missing
+        return {
+            "english": english, 
+            "thai": thai or "",
+            "claimable": claimable
+        } # Return empty string if thai is None/missing
 
     except json.JSONDecodeError as e:
         logger.error(f"Error decoding JSON from OpenAI response: {e}")
