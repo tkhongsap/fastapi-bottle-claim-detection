@@ -9,7 +9,7 @@ import os
 import logging
 from typing import Optional, Tuple
 from pathlib import Path
-from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, AuthenticationError
+from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, AuthenticationError, AzureOpenAI
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -17,9 +17,12 @@ logger = logging.getLogger(__name__)
 # Model selection
 VISION_MODEL = "gpt-4.1"
 FALLBACK_VISION_MODEL = "gpt-4.1"  # Fallback if preferred is unavailable
+api_version = "2025-03-01-preview"
+endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+
 
 # Global client variable and state tracking
-client: Optional[OpenAI] = None
+client: Optional[AzureOpenAI] = None
 active_vision_model = VISION_MODEL
 using_fallback_mode = False
 
@@ -35,8 +38,7 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
     """
     global client, active_vision_model, using_fallback_mode
     
-    API_KEY = os.getenv("OPENAI_API_KEY")
-    ORG_ID = os.getenv("OPENAI_ORG_ID")
+    API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
 
     if not API_KEY:
         logger.error("❌ OPENAI_API_KEY environment variable is not set. Falling back.")
@@ -48,10 +50,10 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
     logger.info(f"OpenAI API key detected: {key_preview} ({'project-based' if is_project_based_key else 'standard'})")
 
     try:
-        client = OpenAI(
-            api_key=API_KEY,
-            organization=ORG_ID,  # Will be None if not set
-            default_headers={"OpenAI-Beta": "assistants=v1"}
+        client = AzureOpenAI(
+            api_key=API_KEY,  
+            api_version=api_version,
+            azure_endpoint=endpoint
         )
 
         # Test API key with a simple call
