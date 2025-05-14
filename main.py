@@ -12,6 +12,7 @@ import subprocess
 import ffmpeg # FFmpeg Python bindings for enhanced video processing
 from typing import List, Dict, Optional, Any
 import shutil
+import pprint
 
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -171,7 +172,8 @@ async def analyze_media_endpoint(
     """
     try:
         # Pass empty string if prompt is None
-        result = await analyze_media(files=files, prompt=NEW_PROMPT) 
+        result = await analyze_media(files=files, prompt=NEW_PROMPT)
+        pprint.pprint(result)
         return JSONResponse(content=result)
     except HTTPException as e:
         # Re-raise known HTTP exceptions from analyze_media

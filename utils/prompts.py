@@ -73,10 +73,11 @@ UNCLAIM_CRITERIAS = """
 """
 
 
-<<<<<<< utils/prompts.py
+
 NEW_PROMPT = f"""
-You will receive an image or multiple images of one bottle or a video of a broken bottle.
+You will receive an image or multiple images of one bottle or a video of a broken bottle and label of manufactured date.
 Your task is to classify claim or unclaim based on the provided images or video.
+Extract manufactured date from label to json key "date" in the output.
 The answer must clearly specify whether the bottle can claim or unclaim,
 
 # Steps
@@ -106,6 +107,11 @@ The answer must clearly specify whether the bottle can claim or unclaim,
    - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
    - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
+6. **Extract date from label:**
+    - Extract the date from first line in the label
+      - Example FILL1204253J, first 6 digits are the date with format DD/MM/YY.
+    - Return it in the output key "date" with format DD/MM/YYYY.
+    - If the date is not found, return "Date not found".
 
 # Notes
 - Always prioritize accuracy and clarity in your responses.
@@ -113,6 +119,7 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Only if all conditions are met can be consider as claim.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
+- Use the following format for the output:
 
 # Output Format
 For each assessment, use the following format:
@@ -124,11 +131,12 @@ For each assessment, use the following format:
 ✅/❌ [Bottom condition]
 ✅/❌ **CLAIM/UNCLAIM** [final decision]
 
-Then provide a JSON object with:
+Then provide a JSON object with these keys:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
+- date: The date extracted from the label.
 """
-=======
+
 
 
 # NEW_PROMPT = """
