@@ -62,80 +62,156 @@
 
     <main>
         <section id="upload-section" class="container">
-            <div class="card">
+            <!-- Stepper navigation -->
+            <div class="card mb-6">
                 <div class="card-header">
-                    <h2><i class="fas fa-cloud-upload-alt"></i> <span data-i18n="upload_media">อัปโหลดสื่อ</span></h2>
-                    <p data-i18n="upload_hint">อัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4) ของขวดเพื่อประเมินสิทธิ์การเคลม</p>
+                    <h2><i class="fas fa-list-check"></i> <span data-i18n="steps_title">กระบวนการประเมินการเคลม</span></h2>
                 </div>
                 <div class="card-body">
-                    <form id="upload-form">
-                        <div class="upload-area">
-                            <label for="media-files" class="file-input-label">
+                    <div class="stepper">
+                        <div class="stepper-step active" data-step="upload">
+                            <div class="stepper-circle">1</div>
+                            <div class="stepper-label" data-i18n="stepper_upload">1. อัปโหลดมีเดีย</div>
+                        </div>
+                        <div class="stepper-step" data-step="results">
+                            <div class="stepper-circle">2</div>
+                            <div class="stepper-label" data-i18n="stepper_results">2. ผลลัพธ์</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side-by-side upload layout -->
+            <div class="upload-grid">
+                <!-- LEFT SIDE: Label upload -->
+                <div id="label-card" class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-check"></i> <span data-i18n="upload_date_label">ตรวจสอบวันที่ผลิต</span></h2>
+                        <p data-i18n="label_upload_hint">อัปโหลดภาพถ่ายระยะใกล้ 1-3 ภาพของฉลากขวดที่แสดงวันที่ผลิต</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="label-upload-area">
+                            <div class="help-link-container">
+                                <button type="button" class="help-modal-button" id="date-help-button">
+                                    <i class="fas fa-question"></i>
+                                </button>
+                            </div>
+                            <label for="label-files" class="file-input-label">
                                 <div class="file-input-placeholder">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <p data-i18n="drag_drop">ลากและวางไฟล์ที่นี่</p>
                                     <span data-i18n="choose_files">เลือกไฟล์</span>
                                 </div>
-                                <div id="preview-content" class="preview-content"></div>
+                                <div id="label-preview-content" class="preview-content"></div>
                             </label>
-                            <input type="file" id="media-files" name="files" accept="image/jpeg, image/png, video/mp4" multiple>
+                            <input type="file" id="label-files" name="file" accept="image/jpeg, image/png" multiple>
+                            <p class="file-note"><i class="fas fa-info-circle"></i> <span data-i18n="label_file_limits">รูปภาพสูงสุด 5 MB ต่อรูป สูงสุด 3 รูป</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE: Damage upload -->
+                <div id="damage-card" class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cloud-upload-alt"></i> <span data-i18n="upload_damage_label">อัปโหลดสื่อความเสียหาย</span></h2>
+                        <p data-i18n="upload_hint">อัปโหลดรูปภาพ (JPG, PNG) หรือวิดีโอ (MP4) ของขวดเพื่อประเมินสิทธิ์การเคลม</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area">
+                            <label for="damage-files" class="file-input-label">
+                                <div class="file-input-placeholder">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p data-i18n="drag_drop">ลากและวางไฟล์ที่นี่</p>
+                                    <span data-i18n="choose_files">เลือกไฟล์</span>
+                                </div>
+                                <div id="damage-preview-content" class="preview-content"></div>
+                            </label>
+                            <input type="file" id="damage-files" name="files" accept="image/jpeg, image/png, video/mp4" multiple>
                             <p class="file-note"><i class="fas fa-info-circle"></i> <span data-i18n="file_note">เลือกรูปหลายรูปหรือวิดีโอหนึ่งไฟล์ของขวด</span></p>
                             <p class="file-limits"><i class="fas fa-exclamation-circle"></i> <span data-i18n="file_limits">รูปภาพสูงสุด 10 MB, วิดีโอสูงสุด 50 MB</span></p>
                         </div>
-                        <div id="preview-container" class="preview-container">
-                            <h3><i class="fas fa-eye"></i> <span data-i18n="media_preview">ตัวอย่างสื่อ</span></h3>
-                            <div></div>
-                        </div>
-                        <button type="submit" class="submit-button"><i class="fas fa-magnifying-glass-chart"></i> <span data-i18n="submit_btn">ประเมินความเสียหายของขวด</span></button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
+            <!-- Central analyze button -->
+            <div class="analyze-button-container">
+                <button id="analyze-both-btn" class="btn-primary" disabled>
+                    <i class="fas fa-magic"></i> <span data-i18n="analyse_both">ประเมินพร้อมกัน</span>
+                </button>
+            </div>
+
+            <!-- Loading state -->
             <div id="loading" class="card">
                 <div class="spinner"></div>
                 <p data-i18n="loading">กำลังวิเคราะห์สภาพขวด...</p>
             </div>
 
-            <div id="results" class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-clipboard-check"></i> <span data-i18n="results_title">ผลการประเมิน</span></h2>
-                </div>
-                <div class="card-body">
-                    <div class="caption-container">
-                        <div id="english-caption" class="caption-box">
-                            <h3><i class="fas fa-language"></i> <span data-i18n="english">ภาษาอังกฤษ</span></h3>
-                            <div class="caption-content">
-                                <p>...</p>
-                                <button class="copy-btn" data-target="english-caption"><i class="fas fa-copy"></i></button>
-                            </div>
+            <!-- Results accordion -->
+            <div id="results-accordion" class="accordion">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <i class="fas fa-clipboard-check"></i> <span data-i18n="results_title">ผลการประเมิน</span>
+                    </div>
+                    <div class="badge-container">
+                        <div id="date-badge" class="badge hidden">
+                            <span></span>
                         </div>
-                        
-                        <div id="thai-caption" class="caption-box">
-                            <h3><i class="fas fa-globe-asia"></i> <span data-i18n="thai">ภาษาไทย</span></h3>
-                            <div class="caption-content">
-                                <p>...</p>
-                                <button class="copy-btn" data-target="thai-caption"><i class="fas fa-copy"></i></button>
-                            </div>
+                        <div id="claim-badge" class="badge hidden">
+                            <span></span>
+                        </div>
+                    </div>
+                    <button class="accordion-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="accordion-body">
+                    <div id="date-result-section" class="result-section hidden">
+                        <h3 data-i18n="date_result_title">การตรวจสอบวันที่ผลิต</h3>
+                        <div id="date-verification-banner" class="date-verification-banner">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="date-verification-message"></span>
                         </div>
                     </div>
                     
-                    <div id="token-usage" class="token-usage">
-                        <h3><i class="fas fa-chart-pie"></i> <span data-i18n="usage_stats">สถิติการใช้ AI</span></h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label" data-i18n="input_tokens">โทเค็นขาเข้า</span>
-                                <span id="input-tokens" class="stat-value">0</span>
+                    <div id="damage-result-section" class="result-section hidden">
+                        <h3 data-i18n="damage_result_title">ผลการประเมินความเสียหาย</h3>
+                        <div class="caption-container">
+                            <div id="english-caption" class="caption-box">
+                                <h4><i class="fas fa-language"></i> <span data-i18n="english">ภาษาอังกฤษ</span></h4>
+                                <div class="caption-content">
+                                    <p>...</p>
+                                    <button class="copy-btn" data-target="english-caption"><i class="fas fa-copy"></i></button>
+                                </div>
                             </div>
-                            <div class="stat-item">
-                                <span class="stat-label" data-i18n="output_tokens">โทเค็นขาออก</span>
-                                <span id="output-tokens" class="stat-value">0</span>
+                            
+                            <div id="thai-caption" class="caption-box">
+                                <h4><i class="fas fa-globe-asia"></i> <span data-i18n="thai">ภาษาไทย</span></h4>
+                                <div class="caption-content">
+                                    <p>...</p>
+                                    <button class="copy-btn" data-target="thai-caption"><i class="fas fa-copy"></i></button>
+                                </div>
                             </div>
-                            <div class="stat-item cost-container">
-                                <span class="stat-label" data-i18n="total_cost">ค่าใช้จ่ายรวม</span>
-                                <div class="cost-values">
-                                    <span id="cost-usd" class="stat-value">$0.00</span>
-                                    <span class="cost-separator">/</span>
-                                    <span id="cost-thb" class="stat-value">฿0.00</span>
+                        </div>
+                        
+                        <div id="token-usage" class="token-usage">
+                            <h4><i class="fas fa-chart-pie"></i> <span data-i18n="usage_stats">สถิติการใช้ AI</span></h4>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label" data-i18n="input_tokens">โทเค็นขาเข้า</span>
+                                    <span id="input-tokens" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label" data-i18n="output_tokens">โทเค็นขาออก</span>
+                                    <span id="output-tokens" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-item cost-container">
+                                    <span class="stat-label" data-i18n="total_cost">ค่าใช้จ่ายรวม</span>
+                                    <div class="cost-values">
+                                        <span id="cost-usd" class="stat-value">$0.00</span>
+                                        <span class="cost-separator">/</span>
+                                        <span id="cost-thb" class="stat-value">฿0.00</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -152,6 +228,21 @@
             </div>
         </section>
     </main>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="help-modal">
+        <div class="help-modal-content">
+            <button class="help-modal-close"><i class="fas fa-times"></i></button>
+            <h3 data-i18n="date_help_title">วิธีหาวันที่ผลิต</h3>
+            <div class="help-modal-body">
+                <p data-i18n="date_help_content">ถ่ายภาพฉลากบนขวดช้างให้ชัดเจน วันที่ผลิตมักพิมพ์อยู่บนฉลากหรือบริเวณก้นขวด</p>
+                <!-- Placeholder for a sample image that could be added later -->
+                <div class="help-image-placeholder" style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                    <i class="fas fa-image" style="font-size: 3rem; color: #aaa;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <div class="container">

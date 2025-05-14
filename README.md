@@ -1,10 +1,10 @@
-# FastAPI ImgStory
+# FastAPI Bottle Claim Detection
 
-A specialized media analysis application for bottle damage assessment that uses OpenAI's vision models to evaluate claim eligibility.
+A specialized media analysis application for **bottle claim detection** and damage assessment, using OpenAI's vision models to evaluate claim eligibility for Chang beer bottles and similar use cases.
 
 ## Project Overview
 
-FastAPI ImgStory is a web application built to analyze Chang beer bottles and determine if they qualify for claims based on their condition. The application processes uploaded images or videos and generates detailed assessment reports that evaluate the bottle's structural integrity across multiple components (cap, neck, body, bottom). Assessment results are provided in both English and Thai languages.
+FastAPI Bottle Claim Detection is a web application built to analyze Chang beer bottles and determine if they qualify for claims based on their condition. The application processes uploaded images or videos and generates detailed assessment reports that evaluate the bottle's structural integrity across multiple components (cap, neck, body, bottom). Assessment results are provided in both English and Thai languages.
 
 ## Features
 
@@ -18,6 +18,7 @@ FastAPI ImgStory is a web application built to analyze Chang beer bottles and de
 - Dual language output (English and Thai)
 - Token usage tracking for API consumption monitoring
 - User-friendly web interface
+- Robust error handling for file type, size, and API errors
 
 ## Assessment Process
 
@@ -58,18 +59,14 @@ The application follows a structured evaluation process:
    OPENAI_API_KEY=your_openai_api_key
    # OPENAI_ORG_ID=your_org_id  # Optional: Uncomment if using organization ID
    ```
+   **Note:** The `.env` file is required. The application will not start without a valid `OPENAI_API_KEY`.
 
 ## Usage
 
-1. Start the server:
-   ```
-   python main.py
-   ```
-   Alternatively, you can use:
+1. Start the server (recommended):
    ```
    uvicorn main:app --reload
    ```
-   
    For Windows users, you can use the provided PowerShell script:
    ```
    .\restart-server.ps1
@@ -84,14 +81,16 @@ The application follows a structured evaluation process:
 
 ## API Endpoints
 
-- `GET /`: Serves the web interface
-- `POST /analyze/`: Processes uploaded media files for bottle assessment
+- `GET /` — Serves the web interface (`static/index.html`)
+- `GET /document` — Serves the documentation page (`static/docs.html`)
+- `GET /manual` — Serves the user manual page (`static/manual.html`)
+- `POST /analyze/` — Processes uploaded media files for bottle assessment
 
 ### POST /analyze/
 
 **Request:**
 - `files`: List of files (JPG, PNG, MP4)
-- `prompt` (optional): Text to guide the analysis (system uses predefined prompts)
+- `prompt` (optional): Text to guide the analysis (currently not used; system uses predefined prompts)
 
 **Response:**
 ```json
@@ -105,6 +104,10 @@ The application follows a structured evaluation process:
   }
 }
 ```
+
+**Error Handling:**
+- Returns clear error messages for unsupported file types, file size limits (10MB per image, 50MB per video), and API errors.
+- Only JPG, PNG images and MP4 videos are supported. Uploading other file types or exceeding size limits will result in a descriptive error.
 
 ## Key Assessment Criteria
 
@@ -135,16 +138,24 @@ fastapi-imgstory/
 ├── requirements.txt      # Python dependencies
 ├── restart-server.ps1    # Server restart script for Windows
 ├── TASKS.md              # Project tasks and progress tracking
-├── static/               # Static files (HTML, CSS, JavaScript)
+├── static/               # Static files (HTML, CSS, JavaScript, locales)
 │   ├── index.html        # Web interface
 │   ├── script.js         # Frontend JavaScript
-│   └── style.css         # CSS styles
-└── utils/                # Utility modules
-    ├── __init__.py       # Package initialization
-    ├── media_analysis.py # Media processing functions
-    ├── openai_client.py  # OpenAI API client
-    ├── prompts.py        # Assessment criteria and prompt templates
-    └── story_generation.py # Assessment generation functions
+│   ├── style.css         # CSS styles
+│   ├── docs.html         # Documentation page
+│   ├── manual.html       # User manual
+│   └── locales/          # Localization files (e.g., en.json, th.json)
+├── uploads/              # Temporary upload storage
+├── utils/                # Utility modules
+│   ├── __init__.py
+│   ├── media_analysis.py # Media analysis logic
+│   ├── media_processing.py # Image processing
+│   ├── media_validation.py # File validation
+│   ├── openai_client.py  # OpenAI API client
+│   ├── prompts.py        # Assessment criteria and prompt templates
+│   ├── story_generation.py # Assessment generation functions
+│   └── video_processing.py # Video processing
+└── attached_assets/      # (Optional) Additional assets
 ```
 
 ## Upcoming Improvements
@@ -156,6 +167,6 @@ fastapi-imgstory/
 - Advanced reporting with visual annotations identifying damage points
 - Batch processing for multiple bottles
 
-## License
+---
 
-[MIT License](LICENSE) 
+**Note:** This project does not currently include a LICENSE file. If you intend to open source or distribute this project, please add an appropriate license. 

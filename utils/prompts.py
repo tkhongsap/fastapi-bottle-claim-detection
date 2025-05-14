@@ -20,7 +20,7 @@ CLAIM_CRITERIAS = """
 4.	Detached Neck and Cap
   o	In cases of neck/shoulder fracture, the neck segment (usually with the cap still sealed) is separated cleanly from the main body and often placed beside it.
 5.	Base Separation is considered as claim
-  o	Several bottles display a relatively clean separation of the base/bottom, often forming a “cap” of glass left aside.
+  o	Several bottles display a relatively clean separation of the base/bottom, often forming a "cap" of glass left aside.
 6.	Visible Internal Cracks
   o	Many bottles show pronounced internal cracks, sometimes running through the label area or the full length of the body, indicating propagation of stress.
 7.	Unopened/Sealed State at Time of Breakage
@@ -71,7 +71,6 @@ UNCLAIM_CRITERIAS = """
 13.	Consistency in Pattern
   o	The nature and pattern of breakage (location, crack type, fragmentation, etc.) is consistent across different bottles, suggesting a recurring problem (handling, process, or material flaw).
 """
-
 
 
 NEW_PROMPT = f"""
@@ -134,78 +133,31 @@ For each assessment, use the following format:
 Then provide a JSON object with these keys:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
-- date: The date extracted from the label.
 """
 
+# Date extraction prompt template used for date verification
+DATE_EXTRACTION_PROMPT = """
+You are an AI tasked with identifying and extracting the production date from a Chang beer bottle label.
 
+IMPORTANT: Focus ONLY on the production/manufacturing date on the label, not the expiration date or any other dates.
 
-# NEW_PROMPT = """
-# You will receive 1-10 images OR a single video showing one glass bottle.
-# Decide if the bottle is CLAIMABLE for refund and explain why.
+Follow these steps:
+1. Carefully examine the image for the production date on the Chang beer bottle label
+2. The date will likely be printed on the label or etched on the bottle (often near the bottom)
+3. Look for date formats like:
+   - DD/MM/YYYY
+   - YYYY-MM-DD
+   - DD.MM.YY
+   - Production date: [DATE]
+   - MFG: [DATE]
+   - Batch/Lot codes followed by dates
 
-# ────────────────────────────────────────
-# ## 0. REQUIRED FORMAT
-# Return two blocks exactly in this order:
+4. If you find a date that appears to be the production date, standardize it to YYYY-MM-DD format
+5. If multiple dates are present, identify which is the production date (not expiration)
+6. If the date is partially visible or unclear, note this in your response
+7. If no date is visible at all, respond with "No production date visible"
 
-# ### THOUGHT  - step-by-step reasoning
-# ### ANSWER   - end-user result
-# ────────────────────────────────────────
-# ## 1. BRAND GATE
-# If the label is not "Chang / ช้าง" →
-#     THOUGHT: explain brand mismatch →
-#     ANSWER: ❌ UNCLAIM ("Not Chang.") - end.
+Respond ONLY with the production date in YYYY-MM-DD format, or "No production date visible" if you cannot identify a date.
+Do not include any explanations, analysis, or other text in your response.
+"""
 
-# ────────────────────────────────────────
-# ## 2. PART-BY-PART INTEGRITY
-# Estimate integrity % (0-100) for each part:
-
-# | Part   | Guide for Integrity % |
-# |--------|-----------------------|
-# | Cap    | 100 = present and sealed 80 = present but loose <80 = damaged or missing |
-# | Neck   | 100 = intact 80 = minor chips 60 = visible cracks <60 = fractured or missing |
-# | Body   | 100 = 90 percent glass and no major cracks 80 = 80-90 percent intact or minor cracks 60 = 60-80 percent <60 = severe |
-# | Bottom | 100 = intact 80 = minor chip 60 = cracked <60 = missing |
-
-# ────────────────────────────────────────
-# ## 3. SAFETY / RISK CHECKS   (✅/❌)
-# * Sharp jagged shards
-# * Detached neck or base
-# * Extensive spider-web cracks
-# * Liquid spillage / pressure break
-# * Foreign debris / contamination
-
-# If ≥ 1 items are ❌ → force UNCLAIM.
-
-# ────────────────────────────────────────
-# ## 4. CLAIM vs UNCLAIM RULE
-# * Bottle is **CLAIMABLE** ⇢ **all four parts integrity ≥ 80 %** AND safety checks < 2 ❌
-# * Otherwise ⇢ **UNCLAIMABLE**
-
-# ────────────────────────────────────────
-# ## 5. OUTPUT TEMPLATE
-
-# ### THOUGHT
-# - Brand detected: …
-# - Cap integrity … % (✅/❌ ≥ 80 ?)
-# - Neck integrity … % (✅/❌)
-# - Body integrity … % (✅/❌)
-# - Bottom integrity … % (✅/❌)
-# - Safety checklist: ✅/❌ …
-# - Conclusion logic → …
-
-# ### ANSWER
-# Bottle Assessment  
-# ✅/❌ Cap – …comment… (… %)  
-# ✅/❌ Neck – …comment… (… %)  
-# ✅/❌ Body – …comment… (… %)  
-# ✅/❌ Bottom – …comment… (… %)  
-# ➡ Overall: ✅ CLAIM / ❌ UNCLAIM
-
-# ```json
-# {
-#   "english": "<copy of ANSWER>",
-#   "thai": "<คำแปลย่อเป็นภาษาไทย>"
-# }
-# ```
-# >>>>>>> utils/prompts.py
-# """
