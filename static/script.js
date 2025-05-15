@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingIndicator = document.getElementById('loading');
     
     // Results content
-    const englishCaptionP = document.querySelector('#english-caption p');
+    // const englishCaptionP = document.querySelector('#english-caption p');
     const thaiCaptionP = document.querySelector('#thai-caption p');
     const inputTokensSpan = document.querySelector('#input-tokens');
     const outputTokensSpan = document.querySelector('#output-tokens');
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show loading indicator
         loadingIndicator.style.display = 'block';
+        
         loadingIndicator.querySelector('p').textContent = i18next.t('date_verification_loading');
         
         try {
@@ -186,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         claimBadge.classList.add('hidden');
         
         // Clear text content
-        englishCaptionP.textContent = '...';
+        // englishCaptionP.textContent = '...';
         thaiCaptionP.textContent = '...';
         inputTokensSpan.textContent = '0';
         outputTokensSpan.textContent = '0';
@@ -262,12 +263,20 @@ document.addEventListener('DOMContentLoaded', function() {
             dateVerificationBanner.classList.remove('eligible');
             dateVerificationBanner.querySelector('i').className = 'fas fa-times-circle';
         }
-        
+          
         // Format the message with the days value
         const translationKey = status === 'ELIGIBLE' ? 'date_banner_eligible' : 'date_banner_ineligible';
-        const message = i18next.t(translationKey, { days: result.english.days_elapsed });
+        
+        const message = i18next.t(translationKey, { 
+            days: result.english.days_elapsed,
+            date: result.english.production_date
+        });
+        
 
-        dateVerificationMessage.textContent = message;
+        // ถ้าแน่ใจว่า message ไม่มี HTML อันตราย
+        dateVerificationMessage.innerHTML = message;
+
+        
     }
     
     // Update damage result UI
@@ -292,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update text content
         if (result.english && result.thai) {
-            englishCaptionP.textContent = result.english;
+            // englishCaptionP.textContent = result.english;
             thaiCaptionP.textContent = result.thai;
         }
         
