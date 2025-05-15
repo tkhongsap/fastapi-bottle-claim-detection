@@ -8,6 +8,7 @@ to determine eligibility for the claim process (within 120 days).
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, Tuple
+import json
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Constants
 MAX_ELIGIBLE_DAYS = 120  # Maximum days since production for eligibility
 
-def verify_production_date(production_date: str) -> Dict[str, Any]:
+def verify_production_date(production_date: Dict[str, str]) -> Dict[str, Any]:
     """
     Verifies if a Chang beer bottle with the given production date is eligible for claims
     based on the 120-day rule.
@@ -32,7 +33,10 @@ def verify_production_date(production_date: str) -> Dict[str, Any]:
         - message: A message explaining the eligibility status (English)
         - message_thai: A message explaining the eligibility status (Thai)
     """
+    
     try:
+        production_date = json.loads(production_date)
+        production_date = production_date.get("manufactured_date")
         # Parse the production date
         prod_date = datetime.strptime(production_date, "%d/%m/%Y")
         

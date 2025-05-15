@@ -134,21 +134,19 @@ Then provide a JSON object with these keys:
 
 # Date extraction prompt template used for date verification
 DATE_EXTRACTION_PROMPT = """
-You are an AI tasked with identifying and extracting the production date from a Chang beer bottle label.
+You are an AI tasked with identifying and extracting the production date from a Chang beer bottle label into JSON format with key "manufactured_date".
 
 IMPORTANT: Focus on first line in the label, first 6 digits which after the word "FILL" are the date with format DD/MM/YY. The last 2 characters are not relevant for the date extraction
 
 Follow these steps:
 1. Carefully examine the image for the production date on the Chang beer bottle label
 2. Look for date (first 6 digits) which after the word "FILL" with format DD/MM/YY:
-    - Example: FILL0101253J is 2025/01/01.
-    - Example: FILL2004253J is 2025/04/20.
-    - Example: FILL0312233J is 2023/12/03.
+    - Example: FILL0101253J is 01/01/2025.
 3. If you find a date that appears on the first line in the label, standardize it to DD/MM/YYYY format
 4. If the date is partially visible or unclear, note this in your response
 5. If no date is visible at all, respond with "No production date visible"
 
-Respond ONLY with the production date in DD/MM/YYYY string format, or "No production date visible" if you cannot identify a date.
-Do not include any explanations, analysis, or other text in your response.
+Respond ONLY with the production date in DD/MM/YYYY JSON format with key "manufactured_date", or "No production date visible" if you cannot identify a date.
+Do not include any explanations, analysis, ```json, or other text in your response.
 """
 

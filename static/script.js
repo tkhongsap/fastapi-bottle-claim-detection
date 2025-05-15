@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Result sections
     const dateResultSection = document.getElementById('date-result-section');
     const damageResultSection = document.getElementById('damage-result-section');
-    
+
     // Date verification elements
     const dateVerificationBanner = document.getElementById('date-verification-banner');
     const dateVerificationMessage = document.getElementById('date-verification-message');
@@ -241,23 +241,23 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDateVerificationUI(result) {
         // Show date result section
         dateResultSection.classList.remove('hidden');
-        console.log(result);
-        // Update date badge
-        dateBadge.classList.remove('hidden');
-        dateBadge.className = 'badge'; // Reset class
+        
         
         const status = result.english.status;
         
         if (status === 'ELIGIBLE') {
-            // dateBadge.classList.add('green');
-            // dateBadge.querySelector('span').textContent = i18next.t('eligible');
+            dateBadge.classList.add('green');
+            dateBadge.querySelector('span').textContent = i18next.t('eligible');
             dateVerificationBanner.classList.add('eligible');
             dateVerificationBanner.classList.remove('ineligible');
             dateVerificationBanner.querySelector('i').className = 'fas fa-check-circle';
             
         } else {
+            // Update date badge
+            dateBadge.classList.remove('hidden');
+            dateBadge.className = 'badge'; // Reset class
             dateBadge.classList.add('red');
-            dateBadge.querySelector('span').textContent = i18next.t('ineligible');
+            // dateBadge.querySelector('span').textContent = i18next.t('ineligible');
             dateVerificationBanner.classList.add('ineligible');
             dateVerificationBanner.classList.remove('eligible');
             dateVerificationBanner.querySelector('i').className = 'fas fa-times-circle';
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Format the message with the days value
         const translationKey = status === 'ELIGIBLE' ? 'date_banner_eligible' : 'date_banner_ineligible';
         const message = i18next.t(translationKey, { days: result.english.days_elapsed });
-        console.log(message);
+
         dateVerificationMessage.textContent = message;
     }
     
@@ -274,13 +274,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDamageResultUI(result) {
         // Show damage result section
         damageResultSection.classList.remove('hidden');
+
         // Update claim badge
         claimBadge.classList.remove('hidden');
         claimBadge.className = 'badge'; // Reset class
         
         // Determine if claimable (this is an assumption, adjust based on your actual API response)
         const isClaimable = result.claimable === true;
-        console.log(isClaimable);
+
         if (isClaimable) {
             claimBadge.classList.add('green');
             claimBadge.querySelector('span').textContent = i18next.t('claim');

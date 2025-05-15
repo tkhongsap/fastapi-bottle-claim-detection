@@ -26,7 +26,7 @@ client: Optional[AzureOpenAI] = None
 active_vision_model = VISION_MODEL
 using_fallback_mode = False
 
-def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
+def initialize_openai_client() -> Tuple[Optional[AzureOpenAI], str, bool]:
     """
     Initialize and validate the OpenAI client with proper error handling.
     
@@ -51,7 +51,7 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
 
     try:
         client = AzureOpenAI(
-            api_key=API_KEY,  
+            api_key=API_KEY,
             api_version=api_version,
             azure_endpoint=endpoint
         )
@@ -100,7 +100,7 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
 
     return client, active_vision_model, using_fallback_mode
 
-def get_client() -> Optional[OpenAI]:
+def get_client() -> Optional[AzureOpenAI]:
     """
     Get the current OpenAI client instance.
     
