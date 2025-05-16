@@ -1,4 +1,5 @@
 :root {
+    /* Light mode colors */
     --primary-color: #4e54c8;
     --primary-dark: #2c2f75;
     --primary-light: #8f94fb;
@@ -12,9 +13,24 @@
     --dark-text: #343a40;
     --light-text: #f8f9fa;
     --gray-text: #6c757d;
+    --card-bg: #ffffff;
+    --border-color: rgba(0, 0, 0, 0.05);
     --border-radius: 12px;
     --card-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+}
+
+[data-theme="dark"] {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --light-bg: #1a1b1e;
+    --dark-text: #f8f9fa;
+    --light-text: #343a40;
+    --gray-text: #a1a1aa;
+    --card-bg: #2d2d2d;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 * {
@@ -27,11 +43,12 @@ body {
     font-family: 'Poppins', 'Noto Sans Thai', sans-serif;
     line-height: 1.6;
     color: var(--dark-text);
-    background-color: #f5f7fa;
+    background-color: var(--light-bg);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
+    transition: var(--transition);
 }
 
 a {
@@ -171,20 +188,22 @@ a {
 }
 
 .hero h1 {
-    font-size: 2.8rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 3.2rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hero .subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 1.5rem;
-    font-weight: 300;
-    max-width: 600px;
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
+    opacity: 0.9;
 }
 
 .hero-cta {
@@ -210,12 +229,13 @@ a {
 
 /* Card Styles */
 .card {
-    background: white;
+    background: var(--card-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
     margin-bottom: 1.5rem;
     overflow: hidden;
     transition: var(--transition);
+    border: 1px solid var(--border-color);
 }
 
 .card:hover {
@@ -229,12 +249,11 @@ a {
 }
 
 .card-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
 }
 
 .card-header i {
@@ -243,7 +262,8 @@ a {
 
 .card-header p {
     color: var(--gray-text);
-    font-size: 0.95rem;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .card-body {
@@ -703,11 +723,11 @@ footer p {
 /* Responsive */
 @media (max-width: 768px) {
     .hero h1 {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
     }
     
     .hero .subtitle {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
     
     .hero {
@@ -754,19 +774,23 @@ footer p {
         padding: 1rem;
         font-size: 0.9rem;
     }
+    .date-details-item {
+        padding: 1rem;
+        font-size: 0.9rem;          /* ระยะขอบรอบๆ เนื้อหา */  
+    }
 }
 
 @media (max-width: 480px) {
     .hero h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
     
     .hero .subtitle {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
     
     .card-header h2 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     
     .card-header p {
@@ -916,6 +940,18 @@ footer p {
     position: relative;
 }
 
+.date-details-item {
+    padding: 1.25rem;          /* ระยะขอบรอบๆ เนื้อหา */  
+}
+
+.info-damage-caption-content {
+    padding: 1.25rem;
+}
+
+.info-date-caption-content {
+    padding: 1.25rem;
+}
+
 .caption-content p {
     padding: 1.25rem;
     min-height: 90px;
@@ -1032,6 +1068,7 @@ body {
     font-size: 0.9rem;
     flex: 1;
     text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stepper-circle {
@@ -1060,6 +1097,8 @@ body {
     border-color: var(--sky-500);
     background-color: var(--sky-500);
     color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
 }
 
 .stepper-step.active .stepper-label {
@@ -1071,6 +1110,8 @@ body {
     border-color: var(--emerald-500);
     background-color: var(--emerald-500);
     color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
 }
 
 .stepper-step.completed .stepper-label {
@@ -1474,4 +1515,546 @@ body {
     .accordion-title {
         font-size: 1.125rem;
     }
+}
+
+/* Skeleton Loading States */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--card-bg) 25%,
+        var(--border-color) 50%,
+        var(--card-bg) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--border-radius);
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.skeleton-text:last-child {
+    width: 80%;
+}
+
+.skeleton-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* Enhanced Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Button Animations */
+.cta-button, .submit-button, .btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cta-button::after, .submit-button::after, .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease-out, height 0.6s ease-out;
+}
+
+.cta-button:hover::after, .submit-button:hover::after, .btn-primary:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Loading Spinner Enhancement */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile Responsiveness Enhancement */
+@media (max-width: 768px) {
+    .card {
+        margin: 1rem 0;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .skeleton-text {
+        height: 0.8em;
+    }
+    
+    .skeleton-circle {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Dark Mode Toggle */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.theme-toggle i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    transition: var(--transition);
+}
+
+/* Enhanced Visual Hierarchy */
+.hero h1 {
+    font-size: 3.2rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero .subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9;
+}
+
+.card-header h2 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+.card-header p {
+    color: var(--gray-text);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Enhanced Mobile Typography */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.4rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .theme-toggle {
+        width: 40px;
+        height: 40px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .theme-toggle i {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Enhanced Step Transitions */
+.stepper-step {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepper-step.completed .stepper-circle {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+.stepper-step.active .stepper-circle {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+}
+
+/* Enhanced Button States */
+.btn-primary, .submit-button, .cta-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:disabled, .submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:disabled::before, .submit-button:disabled::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+    100% { opacity: 0.3; }
+}
+
+/* Enhanced Result Badges */
+.result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.result-badge.passed {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--emerald-500);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.result-badge.failed {
+    background-color: rgba(244, 63, 94, 0.1);
+    color: var(--rose-500);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+.result-badge i {
+    font-size: 1rem;
+}
+
+/* Enhanced Result Cards */
+.result-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.result-card-header {
+    padding: 1rem 1.5rem;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.result-card-header:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.result-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-card-content {
+    padding: 1.5rem;
+    display: none;
+}
+
+.result-card.active .result-card-content {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.info-date-caption-content,
+.info-damage-caption-content {
+  margin-top: auto; /* ดันไปอยู่ด้านล่างสุด */
+}
+/* Enhanced Upload Progress */
+.upload-progress {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    width: 0;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.upload-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+/* Enhanced Loading States */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.loading-overlay.active .loading-content {
+    transform: translateY(0);
+}
+
+/* Enhanced Thai Typography */
+[lang="th"] {
+    font-family: 'Noto Sans Thai', sans-serif;
+    letter-spacing: 0.01em;
+}
+
+[lang="th"] .result-badge {
+    font-weight: 600;
+}
+
+[lang="th"] .result-card-title {
+    font-weight: 700;
+}
+
+/* Mobile Enhancements */
+@media (max-width: 768px) {
+    .result-badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .result-card-header {
+        padding: 0.875rem 1.25rem;
+    }
+    
+    .result-card-title {
+        font-size: 1rem;
+    }
+    
+    .result-card-content {
+        padding: 1.25rem;
+    }
+    
+    .loading-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
 } 
+
+.results-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  flex: 1;
+  min-width: 300px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  background-color: white;
+}
+
+
+.damage-details {
+  padding-top: 0.5rem;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--gray-text);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.results-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  #date-result-card, #damage-result-section {
+    flex: 1;
+    min-width: 300px;
+  }
+  .claim-status-bar {
+    background-color: #f0fdf4;
+    border: 2px solid var(--emerald-500);
+    color: var(--emerald-500);
+    text-align: center;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .claim-status-bar.red {
+    background-color: #fff5f5;
+    border-color: var(--rose-500);
+    color: var(--rose-500);
+  }
+
+/* ───────────────────────────────────────────────────
+   Unify typography for both date-result-card & damage-result
+───────────────────────────────────────────────────── */
+.results-row .card .caption-content {
+    /* ฟอนต์ชุดเดียวกัน */
+    font-family: 'Poppins', 'Noto Sans Thai', sans-serif;
+    /* ขนาดตัวอักษรเท่ากัน */
+    font-size: 1rem;
+    /* น้ำหนักปกติสำหรับข้อความทั่วไป */
+    font-weight: 400;
+    /* ระยะบรรทัดให้ดูสบายตา */
+    line-height: 1.6;
+    /* สีตัวอักษรเดียวกัน */
+    color: var(--dark-text);
+  }
+  

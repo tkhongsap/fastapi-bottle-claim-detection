@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Badge elements
     const dateBadge = document.getElementById('date-badge');
     const claimBadge = document.getElementById('claim-badge');
+    // Claim status bar (new summary section)
+    const claimStatusBar = document.getElementById('claim-status-bar');
+    const claimStatusLabel = document.getElementById('claim-status-label');
+
     
     // Result sections
     const dateResultSection = document.getElementById('date-result-section');
@@ -138,33 +142,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Main analysis function
     async function analyzeFiles() {
         // Reset previous results
+        resetClaimUI();
         resetResults();
-        
+    
         // Show loading indicator
         loadingIndicator.style.display = 'block';
-        
         loadingIndicator.querySelector('p').textContent = i18next.t('date_verification_loading');
-        
+    
         try {
-            // Step 1: Verify date
             const dateVerificationResult = await verifyDate();
-            
-            // Update UI with date verification result
+            console.log("📦 sending label file:", labelFileInput.files[0]);
+
+            console.log("✅ calling updateDateVerificationUI with:", dateVerificationResult);
             updateDateVerificationUI(dateVerificationResult);
-            
-            // If date is eligible, proceed to damage assessment
-            if (dateVerificationResult.english.status === 'ELIGIBLE') {
-                // Update loading message
+    
+            const isDateEligible = dateVerificationResult.english.status === 'ELIGIBLE';
+            let isDamageClaimable = false;
+            const damageClaimInfo = document.getElementById('damage-claim-info');
+            damageClaimInfo.textContent = '❌ ไม่เป็นความเสียหายที่สามารถเคลมได้'
+    
+            if (isDateEligible) {
                 loadingIndicator.querySelector('p').textContent = i18next.t('loading');
-                
-                // Step 2: Analyze damage
                 const damageResult = await analyzeDamage(dateVerificationResult);
-                
-                // Update UI with damage assessment result
+    
                 updateDamageResultUI(damageResult);
+                isDamageClaimable = damageResult.claimable === true;
+                damageClaimInfo.textContent = isDamageClaimable ? '✅ เป็นความเสียหายที่สามารถเคลมได้' : '❌ ไม่เป็นความเสียหายที่สามารถเคลมได้';
             }
-            
-            // Hide loading indicator, update stepper, and show results
+    
+            // ✅ สรุปการเคลมได้จริงหรือไม่
+            // const claimStatusBar = document.getElementById('claim-status-bar');
+            // const claimStatusLabel = document.getElementById('claim-status-label');
+    
+            // if (isDateEligible && isDamageClaimable) {
+            //     claimStatusBar.classList.remove('red');
+            //     claimStatusBar.classList.add('green');
+            //     claimStatusLabel.textContent = i18next.t('claim');
+            // } else {
+            //     claimStatusBar.classList.add('red');
+            //     claimStatusBar.classList.remove('green');
+            //     claimStatusLabel.textContent = i18next.t('unclaim');
+            // }
+
+            // ✅ สรุปการเคลมได้จริงหรือไม่ — หลังประเมินครบ 2 ส่วน
+            const claimStatusBar = document.getElementById('claim-status-bar');
+            const claimStatusLabel = document.getElementById('claim-status-label');
+
+            claimStatusBar.classList.remove('hidden'); // ✅ แสดงกล่อง
+
+            if (isDateEligible && isDamageClaimable) {
+                claimStatusBar.classList.remove('red');
+                claimStatusBar.classList.add('green');
+                claimStatusLabel.textContent = i18next.t('claim');
+            } else {
+                claimStatusBar.classList.add('red');
+                claimStatusBar.classList.remove('green');
+                claimStatusLabel.textContent = i18next.t('unclaim');
+            }
+
+    
+            // Finish UI updates
             loadingIndicator.style.display = 'none';
             updateStepperUI('results');
             resultsAccordion.classList.add('open');
@@ -176,6 +213,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function formatDateToDDMMYYYY(dateObj) {
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // month is 0-indexed
+        const year = dateObj.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+     
     // Reset all result data
     function resetResults() {
         // Hide all result sections
@@ -194,6 +238,34 @@ document.addEventListener('DOMContentLoaded', function() {
         costUsdSpan.textContent = '$0.00';
         costThbSpan.textContent = '฿0.00';
     }
+
+    function resetClaimUI() {
+        // ซ่อนกล่องผลการตรวจสอบวันที่ผลิต
+        document.getElementById('prod-date').textContent = '-';
+        document.getElementById('exp-date').textContent = '-';
+        document.getElementById('days-ago').textContent = '-';
+        document.getElementById('claim-info').textContent = '-';
+        
+        // ซ่อนกล่องเคลมได้ / ไม่ได้
+        const claimStatusBar = document.getElementById('claim-status-bar');
+        const claimStatusLabel = document.getElementById('claim-status-label');
+        claimStatusBar.classList.remove('green', 'red');
+        claimStatusBar.classList.add('hidden'); // ✅ ซ่อนเคลม bar
+        claimStatusLabel.textContent = '';
+    
+        // ซ่อน section ถ้ามีการเปิดไว้
+        const dateResultCard = document.getElementById('date-result-card');
+        if (dateResultCard) {
+            dateResultCard.classList.add('hidden'); // ✅ ซ่อนกล่องวันที่
+        }
+        const damageResultSection = document.getElementById('damage-result-section');
+        if (damageResultSection) {
+            damageResultSection.classList.add('hidden');
+        }
+
+        
+    }
+    
     
     // Verify date API call
     async function verifyDate() {
@@ -210,7 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
             throw new Error(errorData.english?.message || 'An error occurred during date verification.');
         }
         
-        return await response.json();
+        
+        const result = await response.json();
+        console.log("🎯 API /verify-date/ response:", result);
+        return result;
+
     }
     
     // Analyze damage API call
@@ -239,87 +315,68 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Update date verification UI
-    function updateDateVerificationUI(result) {
-        // Show date result section
-        dateResultSection.classList.remove('hidden');
-        
-        
-        const status = result.english.status;
-        
-        if (status === 'ELIGIBLE') {
-            dateBadge.classList.add('green');
-            dateBadge.querySelector('span').textContent = i18next.t('eligible');
-            dateVerificationBanner.classList.add('eligible');
-            dateVerificationBanner.classList.remove('ineligible');
-            dateVerificationBanner.querySelector('i').className = 'fas fa-check-circle';
-            
-        } else {
-            // Update date badge
-            dateBadge.classList.remove('hidden');
-            dateBadge.className = 'badge'; // Reset class
-            dateBadge.classList.add('red');
-            // dateBadge.querySelector('span').textContent = i18next.t('ineligible');
-            dateVerificationBanner.classList.add('ineligible');
-            dateVerificationBanner.classList.remove('eligible');
-            dateVerificationBanner.querySelector('i').className = 'fas fa-times-circle';
-        }
-          
-        // Format the message with the days value
-        const translationKey = status === 'ELIGIBLE' ? 'date_banner_eligible' : 'date_banner_ineligible';
-        
-        const message = i18next.t(translationKey, { 
-            days: result.english.days_elapsed,
-            date: result.english.production_date
-        });
-        
-
-        // ถ้าแน่ใจว่า message ไม่มี HTML อันตราย
-        dateVerificationMessage.innerHTML = message;
-
-        
+    function parseDDMMYYYYToISO(ddmmyyyy) {
+        const [day, month, year] = ddmmyyyy.split('/');
+        return `${year}-${month}-${day}`;
     }
+    
+    function updateDateVerificationUI(result) {
+
+        document.getElementById('date-result-card').classList.remove('hidden');
+        // document.getElementById('claim-status-bar').classList.remove('hidden');
+        console.log("updateDateVerificationUI called");
+        const status = result.english.status;
+        const rawProdDate = result.english.production_date;
+        const isoProdDate = parseDDMMYYYYToISO(rawProdDate);
+        const prodDateObj = new Date(isoProdDate);
+    
+        const expDateObj = new Date(prodDateObj);
+        expDateObj.setFullYear(expDateObj.getFullYear() + 1);
+        const expDateFormatted = formatDateToDDMMYYYY(expDateObj);
+    
+        document.getElementById('prod-date').textContent = rawProdDate;
+        document.getElementById('exp-date').textContent = expDateFormatted;
+        document.getElementById('days-ago').textContent = result.english.days_elapsed;
+        document.getElementById('claim-info').textContent = result.thai.message;
+    
+        const daysElapsed = parseInt(result.english.days_elapsed);
+        console.log('Days elapsed:', daysElapsed); // <== ให้ลอง console.log ตรงนี้
+        
+    
+        // เพิ่มบรรทัดสำหรับสถานะรับเคลม
+        const claimInfo = document.getElementById('claim-info');
+        claimInfo.textContent = daysElapsed <= 120
+            ? '✅ อยู่ในระยะเวลารับเคลม'
+            : '❌ ไม่อยู่ในระยะเวลารับเคลม';
+    }
+    
+      
+    
+    
+    
     
     // Update damage result UI
     function updateDamageResultUI(result) {
-        // Show damage result section
         damageResultSection.classList.remove('hidden');
-
-        // Update claim badge
-        claimBadge.classList.remove('hidden');
-        claimBadge.className = 'badge'; // Reset class
-        
-        // Determine if claimable (this is an assumption, adjust based on your actual API response)
-        const isClaimable = result.claimable === true;
-
-        if (isClaimable) {
-            claimBadge.classList.add('green');
-            claimBadge.querySelector('span').textContent = i18next.t('claim');
-        } else {
-            claimBadge.classList.add('red');
-            claimBadge.querySelector('span').textContent = i18next.t('unclaim');
+    
+        if (result.thai) {
+            document.querySelector('#thai-caption p').textContent = result.thai;
         }
-        
-        // Update text content
-        if (result.english && result.thai) {
-            // englishCaptionP.textContent = result.english;
-            thaiCaptionP.textContent = result.thai;
-        }
-        
-        // Update token usage if available
-        if (result.token_usage) {
-            inputTokensSpan.textContent = result.token_usage.input_tokens.toLocaleString();
-            outputTokensSpan.textContent = result.token_usage.output_tokens.toLocaleString();
-            
-            // Calculate costs
-            const inputCost = (result.token_usage.input_tokens / 1000000) * INPUT_COST_USD_PER_MILLION;
-            const outputCost = (result.token_usage.output_tokens / 1000000) * OUTPUT_COST_USD_PER_MILLION;
+    
+        if (result.input_tokens && result.output_tokens) {
+            inputTokensSpan.textContent = result.input_tokens.toLocaleString();
+            outputTokensSpan.textContent = result.output_tokens.toLocaleString();
+    
+            const inputCost = (result.input_tokens / 1_000_000) * INPUT_COST_USD_PER_MILLION;
+            const outputCost = (result.output_tokens / 1_000_000) * OUTPUT_COST_USD_PER_MILLION;
             const totalCostUSD = inputCost + outputCost;
             const totalCostTHB = totalCostUSD * USD_TO_THB_RATE;
-            
+    
             costUsdSpan.textContent = `$${totalCostUSD.toFixed(4)}`;
             costThbSpan.textContent = `฿${totalCostTHB.toFixed(2)}`;
         }
     }
+    
     
     // Drag and drop functionality for both upload areas
     function setupDragAndDrop() {
