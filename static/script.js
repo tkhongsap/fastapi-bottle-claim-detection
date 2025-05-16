@@ -52,8 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const stepperSteps = document.querySelectorAll('.stepper-step');
 
     // Cost constants for gpt-4.1-mini (per 1M tokens)
-    const INPUT_COST_USD_PER_MILLION = 0.40;
-    const OUTPUT_COST_USD_PER_MILLION = 1.60;
+    const INPUT_COST_USD_PER_MILLION_GPT_41 = 2;
+    const OUTPUT_COST_USD_PER_MILLION_GPT_41 = 8;
+    // Cost constants for o4-mini (per 1M tokens)
+    const INPUT_COST_USD_PER_MILLION_O4_MINI = 1.1;
+    const OUTPUT_COST_USD_PER_MILLION_O4_MINI = 4.4;
+
     const USD_TO_THB_RATE = 35.0;
     
     // Files containers to keep track of selected files
@@ -367,8 +371,8 @@ document.addEventListener('DOMContentLoaded', function() {
             inputTokensSpan.textContent = result.input_tokens.toLocaleString();
             outputTokensSpan.textContent = result.output_tokens.toLocaleString();
     
-            const inputCost = (result.input_tokens / 1_000_000) * INPUT_COST_USD_PER_MILLION;
-            const outputCost = (result.output_tokens / 1_000_000) * OUTPUT_COST_USD_PER_MILLION;
+            const inputCost = (result.input_tokens / 1_000_000) * INPUT_COST_USD_PER_MILLION_GPT_41;
+            const outputCost = (result.output_tokens / 1_000_000) * OUTPUT_COST_USD_PER_MILLION_GPT_41;
             const totalCostUSD = inputCost + outputCost;
             const totalCostTHB = totalCostUSD * USD_TO_THB_RATE;
     

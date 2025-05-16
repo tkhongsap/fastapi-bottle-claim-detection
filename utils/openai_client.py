@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Model selection
 VISION_MODEL = "gpt-4.1"
+DATE_EXTRACTION_MODEL = "o4-mini"
 FALLBACK_VISION_MODEL = "gpt-4.1"  # Fallback if preferred is unavailable
 api_version = "2025-03-01-preview"
 endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
@@ -117,6 +118,16 @@ def get_active_model() -> str:
         The active vision model name
     """
     return active_vision_model
+
+def get_date_extraction_model() -> str:
+    """
+    Get the model used for date extraction.
+    
+    Returns:
+        The date extraction model name
+    """
+    active_vision_model = DATE_EXTRACTION_MODEL
+    return active_vision_model # Placeholder for actual date extraction model
 
 def is_fallback_mode() -> bool:
     """
