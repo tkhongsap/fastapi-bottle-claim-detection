@@ -100,8 +100,9 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 5. **Decide claim or unclaim, consider in order:**
    - If the bottle completely intact, it can claim checkmarks (✅).
    - If the cap separate from the main body and tightly closed, it can claim checkmarks (✅).
-   - If the bottom is missing, it cannot claim checkmarks (❌).
-   - If the bottom detached but it still present, it can claim checkmarks (✅).
+   - If the bottom is **missing entirely** (i.e., not found or shattered), it cannot claim (❌).
+   - If the bottom is **detached as one clean piece** and placed next to the bottle (i.e., not shattered), it can claim (✅).
+   - Base separation with clean break and no sharp fragments or internal cracks is considered CLAIM (✅).
    - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
    - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
@@ -114,6 +115,8 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
 - Provide True or False for claimable key.
 - Use the following format for the output:
+- If the bottom is separated but remains in one clean circular piece (e.g., seen next to the bottle), and there is no sign of shattering or cracking, this is a common base separation pattern and must be considered as CLAIM (✅).
+
 
 
 # Output Format
