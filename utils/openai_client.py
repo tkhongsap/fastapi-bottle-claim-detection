@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 # Model selection
 VISION_MODEL = "gpt-4.1"
-DATE_EXTRACTION_MODEL = "o4-mini"
-FALLBACK_VISION_MODEL = "gpt-4.1"  # Fallback if preferred is unavailable
+DATE_EXTRACTION_MODEL = os.getenv("DATE_EXTRACTION_MODEL")
+FALLBACK_VISION_MODEL = os.getenv("FALLBACK_VISION_MODEL") # Fallback if preferred is unavailable
 api_version = "2025-03-01-preview"
 endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
 

@@ -74,7 +74,7 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         
         # Using the responses API instead of chat completions
         response = client.chat.completions.create(
-            model=openai_client.get_date_extraction_model(),  # Use the date extraction model from client
+            model=openai_client.get_active_model(),  # Use the date extraction model from client
             messages=messages,
             max_completion_tokens=300,
         )

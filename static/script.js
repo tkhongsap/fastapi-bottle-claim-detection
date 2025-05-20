@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update damage result UI
     function updateDamageResultUI(result) {
         damageResultSection.classList.remove('hidden');
-    
+        console.log(result)
         if (result.thai) {
             document.querySelector('#thai-caption p').textContent = result.thai;
         }
