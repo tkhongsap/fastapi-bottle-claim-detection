@@ -20,8 +20,6 @@ DATE_EXTRACTION_MODEL = os.getenv("DATE_EXTRACTION_MODEL")
 FALLBACK_VISION_MODEL = os.getenv("FALLBACK_VISION_MODEL") # Fallback if preferred is unavailable
 api_version = "2025-03-01-preview"
 endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-
-
 # Global client variable and state tracking
 client: Optional[AzureOpenAI] = None
 active_vision_model = VISION_MODEL

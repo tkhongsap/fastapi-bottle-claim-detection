@@ -1152,7 +1152,7 @@ body {
 /* Label Upload Area */
 .label-upload-area {
     border: 2px dashed #ccc;
-    padding: 1.5rem;
+    padding: 2rem;
     border-radius: var(--border-radius);
     text-align: center;
     background-color: #f9f9f9;
@@ -2057,4 +2057,3 @@ body {
     /* สีตัวอักษรเดียวกัน */
     color: var(--dark-text);
   }
-  

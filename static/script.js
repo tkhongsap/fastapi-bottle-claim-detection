@@ -367,18 +367,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('#thai-caption p').textContent = result.thai;
         }
     
-        if (result.input_tokens && result.output_tokens) {
-            inputTokensSpan.textContent = result.input_tokens.toLocaleString();
-            outputTokensSpan.textContent = result.output_tokens.toLocaleString();
-    
-            const inputCost = (result.input_tokens / 1_000_000) * INPUT_COST_USD_PER_MILLION_GPT_41;
-            const outputCost = (result.output_tokens / 1_000_000) * OUTPUT_COST_USD_PER_MILLION_GPT_41;
-            const totalCostUSD = inputCost + outputCost;
-            const totalCostTHB = totalCostUSD * USD_TO_THB_RATE;
-    
-            costUsdSpan.textContent = `$${totalCostUSD.toFixed(4)}`;
-            costThbSpan.textContent = `฿${totalCostTHB.toFixed(2)}`;
+        if (result.total_input_tokens && result.total_output_tokens) {
+            inputTokensSpan.textContent = result.total_input_tokens.toLocaleString();
+            outputTokensSpan.textContent = result.total_output_tokens.toLocaleString();
+        
+            costUsdSpan.textContent = `$${result.total_cost_usd.toFixed(4)}`;
+            costThbSpan.textContent = `฿${result.total_cost_thb.toFixed(2)}`;
         }
+        
     }
     
     

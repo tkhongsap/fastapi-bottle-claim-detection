@@ -15,9 +15,16 @@ from openai import OpenAIError, APIStatusError
 from utils import openai_client
 from utils.prompts import DATE_EXTRACTION_PROMPT
 from utils.media_validation import validate_files
+from utils.cost_utils import get_model_cost, USD_TO_THB_RATE
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Dynamically determine cost based on model
+active_model = openai_client.get_active_model()
+model_cost = get_model_cost(active_model)
+INPUT_COST_USD_PER_MILLION = model_cost["input"]
+OUTPUT_COST_USD_PER_MILLION = model_cost["output"]
 
 async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
     """

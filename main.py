@@ -36,6 +36,7 @@ from utils.story_generation import (
 # Import date verification modules
 from utils.date_extraction import extract_date_from_image
 from utils.date_verification import verify_production_date, format_verification_response
+from utils.cost_utils import get_model_cost, USD_TO_THB_RATE
 
 # --- Configuration & Setup --- 
 
@@ -95,6 +96,12 @@ try:
 except Exception as e:
     logger.error(f"Error mounting static files: {e}")
     # This is a warning, but we'll continue as API endpoints may still work
+
+# Dynamically determine cost based on model
+active_model = openai_client.get_active_model()
+model_cost = get_model_cost(active_model)
+INPUT_COST_USD_PER_MILLION = model_cost["input"]
+OUTPUT_COST_USD_PER_MILLION = model_cost["output"]
 
 # --- FastAPI Lifecycle Events ---
 
@@ -202,12 +209,28 @@ async def verify_date_endpoint(
         
         # Verify the production date
         verification_result = verify_production_date(extraction_result["production_date"])
+
+        logger.info(f"Verification result: {verification_result}")
         
         # Format the response
         response_data = format_verification_response(verification_result)
         
         # Add token usage information to the response
         response_data["token_usage"] = extraction_result["token_usage"]
+
+        logger.info(f"response data: {response_data}")
+
+        # Calculate cost in THB
+        input_tokens = extraction_result["token_usage"]["input_tokens"]
+        output_tokens = extraction_result["token_usage"]["output_tokens"]
+        input_cost_thb = input_tokens * INPUT_COST_USD_PER_MILLION * USD_TO_THB_RATE / 1000000
+        output_cost_thb = output_tokens * OUTPUT_COST_USD_PER_MILLION * USD_TO_THB_RATE / 1000000
+
+        response_data["input_cost_thb"] = input_cost_thb
+        response_data["output_cost_thb"] = output_cost_thb
+
+        logger.info(f"response data final: {response_data}")
+
         
         return JSONResponse(content=response_data)
     
@@ -267,12 +290,49 @@ async def analyze_media_endpoint(
         
         # Pass empty string if prompt is None
         result = await analyze_media(files=files, prompt=NEW_PROMPT) 
+
+        logger.info(f"result: {result}")
+
+        # --- Convert date_verification from string to dict if needed ---
+        if date_verification:
+            if isinstance(date_verification, str):
+                try:
+                    date_verification = json.loads(date_verification)
+                except json.JSONDecodeError:
+                    logger.error("Invalid JSON in date_verification parameter")
+                    raise HTTPException(status_code=400, detail="Invalid JSON format for date_verification")
+
         
         # If we have date verification, include it in the response
         if date_verification:
             result["date_verification"] = date_verification
-        
+
+        input_tokens_damage = result.get("input_tokens", 0)
+        output_tokens_damage = result.get("output_tokens", 0)
+
+        input_tokens_date = date_verification.get("token_usage", {}).get("input_tokens", 0) if date_verification else 0
+        output_tokens_date = date_verification.get("token_usage", {}).get("output_tokens", 0) if date_verification else 0
+
+        total_input_tokens = input_tokens_damage + input_tokens_date
+        total_output_tokens = output_tokens_damage + output_tokens_date
+
+        total_input_cost_thb = total_input_tokens * INPUT_COST_USD_PER_MILLION * USD_TO_THB_RATE / 1_000_000
+        total_output_cost_thb = total_output_tokens * OUTPUT_COST_USD_PER_MILLION * USD_TO_THB_RATE / 1_000_000
+        total_cost_thb = total_input_cost_thb + total_output_cost_thb
+        total_cost_usd = total_cost_thb / USD_TO_THB_RATE
+
+        # Add combined result back
+        result["total_input_tokens"] = total_input_tokens
+        result["total_output_tokens"] = total_output_tokens
+        result["total_cost_thb"] = total_cost_thb
+        result["total_cost_usd"] = total_cost_usd
+
+
+        logger.info(f"result final: {result}")
+
+
         return JSONResponse(content=result)
+    
     except HTTPException as e:
         # Re-raise known HTTP exceptions from analyze_media
         raise e
