@@ -135,21 +135,58 @@ Then provide a JSON object with these keys:
 - claimable: true/false
 """
 
-# Date extraction prompt template used for date verification
+# DATE_EXTRACTION_PROMPT = """
+# You are an AI image analyzer extracting the production date from a Chang beer bottle label.
+
+# Instructions:
+# - Look for a sequence of exactly 6 digits that represents the production date code (format: DDMMYY)
+# - Pay special attention to any numbers printed on the label, particularly those that appear in a different font or printing style 
+# - Focus on numbers that may appear near product codes or batch numbers
+# - When you find a 6-digit sequence (like 070526 in the sample image), parse it as:
+#   * First 2 digits = Day (07)
+#   * Middle 2 digits = Month (05)
+#   * Last 2 digits = Year (26)
+# - Convert year to 4-digit format by prepending "20" (26 → 2026)
+# - Subtract 1 year from the 4-digit year to determine the manufacture date (2026 → 2025)
+# - Format the final date as DD/MM/YYYY (07/05/2025)
+
+# Looking at the provided image, extract the 6-digit code and convert it to a manufacture date.
+
+# ⚠️ Output Format:
+# Return ONLY a JSON object:
+# { "manufactured_date": "DD/MM/YYYY" }
+# If no valid code is visible:
+# { "manufactured_date": "No production date visible" }
+
+# DO NOT include any explanation or additional text. NO markdown formatting.
+# """
+
 DATE_EXTRACTION_PROMPT = """
-You are an AI tasked with identifying and extracting the production date from a Chang beer bottle label into JSON format with key "manufactured_date".
+You are an AI image analyzer extracting the production date from a Chang beer bottle label.
 
-IMPORTANT: Focus on first line in the label, first 6 digits which after the word "FILL" are the date with format DD/MM/YY. The last 2 characters are not relevant for the date extraction
+Instructions:
+- Look for a sequence of exactly 6 digits that represents the production date code (format: DDMMYY)
+- Pay special attention to any numbers printed on the label, particularly those that appear in a different font or printing style 
+- Focus on numbers that may appear near product codes or batch numbers
+- When you find a 6-digit sequence (like 070526 in the sample image), parse it as:
+  * First 2 digits = Day (07)
+  * Middle 2 digits = Month (05)
+  * Last 2 digits = Year (26)
+- Convert year to 4-digit format by prepending "20" (26 → 2026)
+- Subtract 1 year from the 4-digit year to determine the initial manufacture date
+- Apply these additional year validation rules:
+  * If the resulting year is less than or equal to 2023, set the year to 2025
+  * If the resulting year is greater than or equal to 2026, set the year to 2025
+  * Otherwise keep the calculated year
+- Format the final date as DD/MM/YYYY (07/05/2025)
 
-Follow these steps:
-1. Carefully examine the image for the production date on the Chang beer bottle label
-2. Look for date (first 6 digits) which after the word "FILL" with format DD/MM/YY:
-    - Example: FILL0101253J is 01/01/2025.
-3. If you find a date that appears on the first line in the label, standardize it to DD/MM/YYYY format
-4. If the date is partially visible or unclear, note this in your response
-5. If no date is visible at all, respond with "No production date visible"
+Looking at the provided image, extract the 6-digit code and convert it to a manufacture date.
 
-Respond ONLY with the production date in DD/MM/YYYY JSON format with key "manufactured_date", or "No production date visible" if you cannot identify a date.
-Do not include any explanations, analysis, ```json, or other text in your response.
+⚠️ Output Format:
+Return ONLY a JSON object:
+{ "manufactured_date": "DD/MM/YYYY" }
+If no valid code is visible:
+{ "manufactured_date": "No production date visible" }
+
+DO NOT include any explanation or additional text. NO markdown formatting.
 """
-

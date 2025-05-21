@@ -55,7 +55,22 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         # Reset file position and read content
         await file.seek(0)
         contents = await file.read()
-        base64_image = base64.b64encode(contents).decode('utf-8')
+
+        # ✅ [NEW] Save original file temporarily
+        temp_original_path = f"uploads/temp_{file.filename}"
+        with open(temp_original_path, "wb") as f:
+            f.write(contents)
+
+        # ✅ [NEW] Preprocess the image
+        temp_processed_path = f"uploads/processed_{file.filename}"
+        from utils.image_preprocess import preprocess_image_for_llm
+        preprocess_image_for_llm(temp_original_path, temp_processed_path)
+
+        # ✅ [NEW] Read preprocessed image content
+        with open(temp_processed_path, "rb") as f:
+            processed_contents = f.read()
+        
+        base64_image = base64.b64encode(processed_contents).decode("utf-8")
         
         # Create input with the image and prompt for responses API
         messages = [
@@ -83,7 +98,7 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         response = client.chat.completions.create(
             model=openai_client.get_active_model(),  # Use the date extraction model from client
             messages=messages,
-            max_completion_tokens=300,
+            max_completion_tokens=100,
         )
         
         # Extract the response text
