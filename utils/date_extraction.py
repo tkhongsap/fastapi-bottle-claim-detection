@@ -70,7 +70,7 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
         with open(temp_processed_path, "rb") as f:
             processed_contents = f.read()
         
-        base64_image = base64.b64encode(processed_contents).decode("utf-8")
+        base64_image = base64.b64encode(contents).decode("utf-8")
         
         # Create input with the image and prompt for responses API
         messages = [
