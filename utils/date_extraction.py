@@ -13,7 +13,7 @@ from openai import OpenAIError, APIStatusError
 
 # Import from our utilities
 from utils import openai_client
-from utils.prompts import DATE_EXTRACTION_PROMPT
+from utils.prompts import DATE_EXTRACTION_PROMPT, DATE_EXTRACTION_PROMPT_O4
 from utils.media_validation import validate_files
 from utils.cost_utils import get_model_cost, USD_TO_THB_RATE
 
@@ -79,7 +79,7 @@ async def extract_date_from_image(file: UploadFile) -> Dict[str, Any]:
                 "content": [
                     {
                         "type": "text",
-                        "text": DATE_EXTRACTION_PROMPT
+                        "text": DATE_EXTRACTION_PROMPT_O4
                     },
                     {
                         "type": "image_url",

@@ -178,7 +178,7 @@ Instructions:
   * If the resulting year is less than or equal to 2023, set the year to 2025
   * If the resulting year is greater than or equal to 2026, set the year to 2025
   * Otherwise keep the calculated year
-- Format the final date as DD/MM/YYYY (07/05/2025)
+- Format the final date as DD/MM/YYYY (example: "070526" → "07/05/2025")
 
 Looking at the provided image, extract the 6-digit code and convert it to a manufacture date.
 
@@ -189,4 +189,60 @@ If no valid code is visible:
 { "manufactured_date": "No production date visible" }
 
 DO NOT include any explanation or additional text. NO markdown formatting.
+"""
+
+
+# DATE_EXTRACTION_PROMPT = """
+# You are an AI image analyzer. Your task is to find and extract a 6-digit production date code from a Chang beer bottle label.
+
+# INSTRUCTIONS:
+
+# - Carefully scan the label in the image for a group of **exactly 6 digits** together (example: 070526).
+# - Do **not** use groups with more or less than 6 digits.
+# - Ignore groups that have non-digit characters, spaces, or special symbols.
+# - When you find the correct 6 digits, interpret as date in DDMMYY format:
+#     - First 2 digits = Day
+#     - Next 2 digits = Month
+#     - Last 2 digits = Year (YY)
+# - Convert year to 4 digits by adding "20" in front (example: 26 → 2026).
+# - Subtract 1 year from the 4-digit year (2026 - 1 = 2025).
+# - If the result year is less than or equal to 2023, set year to 2025.
+# - If the result year is greater than or equal to 2026, set year to 2025.
+# - Otherwise, keep the calculated year.
+# - Format the final date as DD/MM/YYYY. (example: "070526" → "07/05/2025")
+
+# RESPONSE FORMAT:
+# - Respond **ONLY** with a single-line JSON object, like:
+#     { "manufactured_date": "07/05/2025" }
+# - If no valid 6-digit code is visible, respond with:
+#     { "manufactured_date": "No production date visible" }
+# - Do NOT add any explanation.
+# - Do NOT use markdown, backticks, or any extra text.
+# - Do NOT write anything before or after the JSON object.
+
+# ONLY output the JSON object as described above. If you do not see a valid code, output the "No production date visible" JSON exactly.
+# """
+
+DATE_EXTRACTION_PROMPT_O4 = """
+You are an AI assistant. Your ONLY task is to extract a 6-digit production date from a Chang beer bottle label image.
+
+Instructions:
+- Find exactly 6 digits together, no spaces or symbols (for example: 070526).
+- Ignore any group with fewer or more than 6 digits, or with non-digit characters.
+- Interpret these 6 digits as DDMMYY:
+    - First 2 digits: Day
+    - Next 2 digits: Month
+    - Last 2 digits: Year (YY)
+- Convert year to 4 digits by adding '20' in front. (e.g., 26 → 2026)
+- Subtract 1 year from the year. (e.g., 2026 → 2025)
+- If the year is less than or equal to 2023, or greater than or equal to 2026, set year to 2025.
+- Format the final date as DD/MM/YYYY. (e.g., "070526" → "07/05/2025")
+
+OUTPUT RULES:
+- Output ONLY a single-line JSON object like:
+  { "manufactured_date": "07/05/2025" }
+- If there is no valid 6-digit group, output ONLY:
+  { "manufactured_date": "No production date visible" }
+- Do NOT add explanation, markdown, newlines, or extra text. Output ONLY the JSON object, nothing else.
+- Do NOT write anything before or after the JSON object.
 """
