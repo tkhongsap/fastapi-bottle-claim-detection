@@ -9,21 +9,23 @@ import os
 import logging
 from typing import Optional, Tuple
 from pathlib import Path
-from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, AuthenticationError
+from openai import OpenAI, OpenAIError, APIStatusError, APIConnectionError, AuthenticationError, AzureOpenAI
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 # Model selection
-VISION_MODEL = "gpt-4.1-mini"
-FALLBACK_VISION_MODEL = "gpt-4.1-mini"  # Fallback if preferred is unavailable
-
+VISION_MODEL = "gpt-4.1"
+DATE_EXTRACTION_MODEL = os.getenv("DATE_EXTRACTION_MODEL")
+FALLBACK_VISION_MODEL = os.getenv("FALLBACK_VISION_MODEL") # Fallback if preferred is unavailable
+api_version = "2025-03-01-preview"
+endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
 # Global client variable and state tracking
-client: Optional[OpenAI] = None
+client: Optional[AzureOpenAI] = None
 active_vision_model = VISION_MODEL
 using_fallback_mode = False
 
-def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
+def initialize_openai_client() -> Tuple[Optional[AzureOpenAI], str, bool]:
     """
     Initialize and validate the OpenAI client with proper error handling.
     
@@ -35,8 +37,7 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
     """
     global client, active_vision_model, using_fallback_mode
     
-    API_KEY = os.getenv("OPENAI_API_KEY")
-    ORG_ID = os.getenv("OPENAI_ORG_ID")
+    API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
 
     if not API_KEY:
         logger.error("❌ OPENAI_API_KEY environment variable is not set. Falling back.")
@@ -48,10 +49,10 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
     logger.info(f"OpenAI API key detected: {key_preview} ({'project-based' if is_project_based_key else 'standard'})")
 
     try:
-        client = OpenAI(
+        client = AzureOpenAI(
             api_key=API_KEY,
-            organization=ORG_ID,  # Will be None if not set
-            default_headers={"OpenAI-Beta": "assistants=v1"}
+            api_version=api_version,
+            azure_endpoint=endpoint
         )
 
         # Test API key with a simple call
@@ -98,7 +99,7 @@ def initialize_openai_client() -> Tuple[Optional[OpenAI], str, bool]:
 
     return client, active_vision_model, using_fallback_mode
 
-def get_client() -> Optional[OpenAI]:
+def get_client() -> Optional[AzureOpenAI]:
     """
     Get the current OpenAI client instance.
     
@@ -115,6 +116,16 @@ def get_active_model() -> str:
         The active vision model name
     """
     return active_vision_model
+
+def get_date_extraction_model() -> str:
+    """
+    Get the model used for date extraction.
+    
+    Returns:
+        The date extraction model name
+    """
+    active_vision_model = DATE_EXTRACTION_MODEL
+    return active_vision_model # Placeholder for actual date extraction model
 
 def is_fallback_mode() -> bool:
     """

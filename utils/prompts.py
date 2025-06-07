@@ -20,7 +20,7 @@ CLAIM_CRITERIAS = """
 4.	Detached Neck and Cap
   o	In cases of neck/shoulder fracture, the neck segment (usually with the cap still sealed) is separated cleanly from the main body and often placed beside it.
 5.	Base Separation is considered as claim
-  o	Several bottles display a relatively clean separation of the base/bottom, often forming a “cap” of glass left aside.
+  o	Several bottles display a relatively clean separation of the base/bottom, often forming a "cap" of glass left aside.
 6.	Visible Internal Cracks
   o	Many bottles show pronounced internal cracks, sometimes running through the label area or the full length of the body, indicating propagation of stress.
 7.	Unopened/Sealed State at Time of Breakage
@@ -100,8 +100,9 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 5. **Decide claim or unclaim, consider in order:**
    - If the bottle completely intact, it can claim checkmarks (✅).
    - If the cap separate from the main body and tightly closed, it can claim checkmarks (✅).
-   - If the bottom is missing, it cannot claim checkmarks (❌).
-   - If the bottom detached but it still present, it can claim checkmarks (✅).
+   - If the bottom is **missing entirely** (i.e., not found or shattered), it cannot claim (❌).
+   - If the bottom is **detached as one clean piece** and placed next to the bottle (i.e., not shattered), it can claim (✅).
+   - Base separation with clean break and no sharp fragments or internal cracks is considered CLAIM (✅).
    - If there is just only base separation or the separated bottom is not break into small shatters is considered as claim checkmarks (✅).
    - If there is a neck seperation but not break into a small shatters is considered as claim checkmarks (✅).
 
@@ -112,6 +113,11 @@ The answer must clearly specify whether the bottle can claim or unclaim,
 - Use checkmarks (✅) for passing conditions and X marks (❌) for failing conditions.
 - Only if all conditions are met can be consider as claim.
 - Ensure reasoning steps logically lead to the conclusions before stating your final answer.
+- Provide True or False for claimable key.
+- Use the following format for the output:
+- If the bottom is separated but remains in one clean circular piece (e.g., seen next to the bottle), and there is no sign of shattering or cracking, this is a common base separation pattern and must be considered as CLAIM (✅).
+
+
 
 # Output Format
 For each assessment, use the following format:
@@ -123,80 +129,120 @@ For each assessment, use the following format:
 ✅/❌ [Bottom condition]
 ✅/❌ **CLAIM/UNCLAIM** [final decision]
 
-Then provide a JSON object with:
+Then provide a JSON object with these keys:
 - english: Use output format to answer.
 - thai: The description translated to Thai.
+- claimable: true/false
+"""
+
+# DATE_EXTRACTION_PROMPT = """
+# You are an AI image analyzer extracting the production date from a Chang beer bottle label.
+
+# Instructions:
+# - Look for a sequence of exactly 6 digits that represents the production date code (format: DDMMYY)
+# - Pay special attention to any numbers printed on the label, particularly those that appear in a different font or printing style 
+# - Focus on numbers that may appear near product codes or batch numbers
+# - When you find a 6-digit sequence (like 070526 in the sample image), parse it as:
+#   * First 2 digits = Day (07)
+#   * Middle 2 digits = Month (05)
+#   * Last 2 digits = Year (26)
+# - Convert year to 4-digit format by prepending "20" (26 → 2026)
+# - Subtract 1 year from the 4-digit year to determine the manufacture date (2026 → 2025)
+# - Format the final date as DD/MM/YYYY (07/05/2025)
+
+# Looking at the provided image, extract the 6-digit code and convert it to a manufacture date.
+
+# ⚠️ Output Format:
+# Return ONLY a JSON object:
+# { "manufactured_date": "DD/MM/YYYY" }
+# If no valid code is visible:
+# { "manufactured_date": "No production date visible" }
+
+# DO NOT include any explanation or additional text. NO markdown formatting.
+# """
+
+DATE_EXTRACTION_PROMPT = """
+You are an AI image analyzer extracting the production date from a Chang beer bottle label.
+
+Instructions:
+- Look for a sequence of exactly 6 digits that represents the production date code (format: DDMMYY)
+- Pay special attention to any numbers printed on the label, particularly those that appear in a different font or printing style 
+- Focus on numbers that may appear near product codes or batch numbers
+- When you find a 6-digit sequence (like 070526 in the sample image), parse it as:
+  * First 2 digits = Day (07)
+  * Middle 2 digits = Month (05)
+  * Last 2 digits = Year (26)
+- Convert year to 4-digit format by prepending "20" (26 → 2026)
+- Subtract 1 year from the 4-digit year to determine the initial manufacture date
+- Apply these additional year validation rules:
+  * If the resulting year is less than or equal to 2023, set the year to 2025
+  * If the resulting year is greater than or equal to 2026, set the year to 2025
+  * Otherwise keep the calculated year
+- Format the final date as DD/MM/YYYY (example: "070526" → "07/05/2025")
+
+Looking at the provided image, extract the 6-digit code and convert it to a manufacture date.
+
+⚠️ Output Format:
+Return ONLY a JSON object:
+{ "manufactured_date": "DD/MM/YYYY" }
+If no valid code is visible:
+{ "manufactured_date": "No production date visible" }
+
+DO NOT include any explanation or additional text. NO markdown formatting.
 """
 
 
+# DATE_EXTRACTION_PROMPT = """
+# You are an AI image analyzer. Your task is to find and extract a 6-digit production date code from a Chang beer bottle label.
 
-# NEW_PROMPT = """
-# You will receive 1-10 images OR a single video showing one glass bottle.
-# Decide if the bottle is CLAIMABLE for refund and explain why.
+# INSTRUCTIONS:
 
-# ────────────────────────────────────────
-# ## 0. REQUIRED FORMAT
-# Return two blocks exactly in this order:
+# - Carefully scan the label in the image for a group of **exactly 6 digits** together (example: 070526).
+# - Do **not** use groups with more or less than 6 digits.
+# - Ignore groups that have non-digit characters, spaces, or special symbols.
+# - When you find the correct 6 digits, interpret as date in DDMMYY format:
+#     - First 2 digits = Day
+#     - Next 2 digits = Month
+#     - Last 2 digits = Year (YY)
+# - Convert year to 4 digits by adding "20" in front (example: 26 → 2026).
+# - Subtract 1 year from the 4-digit year (2026 - 1 = 2025).
+# - If the result year is less than or equal to 2023, set year to 2025.
+# - If the result year is greater than or equal to 2026, set year to 2025.
+# - Otherwise, keep the calculated year.
+# - Format the final date as DD/MM/YYYY. (example: "070526" → "07/05/2025")
 
-# ### THOUGHT  - step-by-step reasoning
-# ### ANSWER   - end-user result
-# ────────────────────────────────────────
-# ## 1. BRAND GATE
-# If the label is not "Chang / ช้าง" →
-#     THOUGHT: explain brand mismatch →
-#     ANSWER: ❌ UNCLAIM ("Not Chang.") - end.
+# RESPONSE FORMAT:
+# - Respond **ONLY** with a single-line JSON object, like:
+#     { "manufactured_date": "07/05/2025" }
+# - If no valid 6-digit code is visible, respond with:
+#     { "manufactured_date": "No production date visible" }
+# - Do NOT add any explanation.
+# - Do NOT use markdown, backticks, or any extra text.
+# - Do NOT write anything before or after the JSON object.
 
-# ────────────────────────────────────────
-# ## 2. PART-BY-PART INTEGRITY
-# Estimate integrity % (0-100) for each part:
-
-# | Part   | Guide for Integrity % |
-# |--------|-----------------------|
-# | Cap    | 100 = present and sealed 80 = present but loose <80 = damaged or missing |
-# | Neck   | 100 = intact 80 = minor chips 60 = visible cracks <60 = fractured or missing |
-# | Body   | 100 = 90 percent glass and no major cracks 80 = 80-90 percent intact or minor cracks 60 = 60-80 percent <60 = severe |
-# | Bottom | 100 = intact 80 = minor chip 60 = cracked <60 = missing |
-
-# ────────────────────────────────────────
-# ## 3. SAFETY / RISK CHECKS   (✅/❌)
-# * Sharp jagged shards
-# * Detached neck or base
-# * Extensive spider-web cracks
-# * Liquid spillage / pressure break
-# * Foreign debris / contamination
-
-# If ≥ 1 items are ❌ → force UNCLAIM.
-
-# ────────────────────────────────────────
-# ## 4. CLAIM vs UNCLAIM RULE
-# * Bottle is **CLAIMABLE** ⇢ **all four parts integrity ≥ 80 %** AND safety checks < 2 ❌
-# * Otherwise ⇢ **UNCLAIMABLE**
-
-# ────────────────────────────────────────
-# ## 5. OUTPUT TEMPLATE
-
-# ### THOUGHT
-# - Brand detected: …
-# - Cap integrity … % (✅/❌ ≥ 80 ?)
-# - Neck integrity … % (✅/❌)
-# - Body integrity … % (✅/❌)
-# - Bottom integrity … % (✅/❌)
-# - Safety checklist: ✅/❌ …
-# - Conclusion logic → …
-
-# ### ANSWER
-# Bottle Assessment  
-# ✅/❌ Cap – …comment… (… %)  
-# ✅/❌ Neck – …comment… (… %)  
-# ✅/❌ Body – …comment… (… %)  
-# ✅/❌ Bottom – …comment… (… %)  
-# ➡ Overall: ✅ CLAIM / ❌ UNCLAIM
-
-# ```json
-# {
-#   "english": "<copy of ANSWER>",
-#   "thai": "<คำแปลย่อเป็นภาษาไทย>"
-# }
-# ```
-# >>>>>>> utils/prompts.py
+# ONLY output the JSON object as described above. If you do not see a valid code, output the "No production date visible" JSON exactly.
 # """
+
+DATE_EXTRACTION_PROMPT_O4 = """
+You are an AI assistant. Your ONLY task is to extract a 6-digit production date from a Chang beer bottle label image.
+
+Instructions:
+- Find exactly 6 digits together, no spaces or symbols (for example: 070526).
+- Ignore any group with fewer or more than 6 digits, or with non-digit characters.
+- Interpret these 6 digits as DDMMYY:
+    - First 2 digits: Day
+    - Next 2 digits: Month
+    - Last 2 digits: Year (YY)
+- Convert year to 4 digits by adding '20' in front. (e.g., 26 → 2026)
+- Subtract 1 year from the year. (e.g., 2026 → 2025)
+- If the year is less than or equal to 2023, or greater than or equal to 2026, set year to 2025.
+- Format the final date as DD/MM/YYYY. (e.g., "070526" → "07/05/2025")
+
+OUTPUT RULES:
+- Output ONLY a single-line JSON object like:
+  { "manufactured_date": "07/05/2025" }
+- If there is no valid 6-digit group, output ONLY:
+  { "manufactured_date": "No production date visible" }
+- Do NOT add explanation, markdown, newlines, or extra text. Output ONLY the JSON object, nothing else.
+- Do NOT write anything before or after the JSON object.
+"""
